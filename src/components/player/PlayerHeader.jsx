@@ -1,3 +1,6 @@
+import { Link } from 'react-router-dom'
+import { getTeamBranding, teamNameToSlug } from '../../lib/teamBranding'
+
 function StatBox({ label, value }) {
   return (
     <div className="stat-box">
@@ -9,10 +12,20 @@ function StatBox({ label, value }) {
 
 export default function PlayerHeader({ stats }) {
   const { player_name, team, position, height, weight, jersey_number, ppg, rpg, apg, fg_pct, season, games_played, mpg } = stats
+  const branding = getTeamBranding(team)
+
+  const heroTopStyle = branding
+    ? {
+      backgroundImage: `linear-gradient(120deg, ${branding.color}e8, rgba(11,16,32,0.94)), url(${branding.logoUrl})`,
+      backgroundSize: 'cover, min(42%, 280px)',
+      backgroundPosition: 'center, 92% 45%',
+      backgroundRepeat: 'no-repeat, no-repeat',
+    }
+    : undefined
 
   return (
     <article className="card player-hero">
-      <div className="hero-top" />
+      <div className={'hero-top' + (branding ? ' hero-top--team' : '')} style={heroTopStyle} />
       <div className="hero-body">
         <div className="player-main">
           <div className="player-avatar">
@@ -23,7 +36,11 @@ export default function PlayerHeader({ stats }) {
           <div className="player-info">
             <div className="player-name-row">
               <h1 className="player-name">{player_name}</h1>
-              <span className="team-pill">{team}</span>
+              {team && (
+                <Link to={`/team/${teamNameToSlug(team)}/roster`} className="team-pill team-pill--link">
+                  {team}
+                </Link>
+              )}
             </div>
             <div className="player-meta">
               <span>{position}</span>

@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "fetch:nba-data": "node scripts/fetch-current-nba-data.mjs",
+    "sync:nba": "bash scripts/run_nba_sync.sh"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.101.0",
@@ -18,6 +20,7 @@
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",
+    "cheerio": "^1.2.0",
     "vite": "^5.1.0"
   }
 }

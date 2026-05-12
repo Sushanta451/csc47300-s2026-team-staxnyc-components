@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { teamVariantsForQuery } from './teamBranding'
 
 export async function getPlayerById(playerId) {
   const { data, error } = await supabase
@@ -23,6 +24,48 @@ export async function searchPlayers(query, limit = 12) {
     .limit(limit)
   if (error) throw error
   return data
+}
+
+/** Roster by franchise: matches `player_stats.team` against canonical name and tricode variants. */
+export async function getPlayersForTeamIdentity(identity) {
+  const variants = teamVariantsForQuery(identity)
+  if (!variants.length) return []
+  const { data, error } = await supabase
+    .from('player_stats')
+    .select('player_id,player_name,team,position,ppg,rpg,apg,jersey_number')
+    .in('team', variants)
+    .order('player_name', { ascending: true })
+  if (error) throw error
+  return data || []
+}
+
+/**
+ * Live standings from Supabase `nba_standings`. Returns [] if the table is absent, empty, or unreadable
+ * so the UI can fall back to static data.
+ */
+export async function getStandings() {
+  try {
+    const { data, error } = await supabase
+      .from('nba_standings')
+      .select('conference,team,rank,wins,losses,pct,gb,streak,last10,team_slug')
+      .order('conference', { ascending: true })
+      .order('rank', { ascending: true })
+    if (error || !data?.length) return []
+    return data.map((row) => ({
+      conference: row.conference,
+      team: row.team,
+      rank: row.rank,
+      wins: row.wins,
+      losses: row.losses,
+      pct: typeof row.pct === 'number' ? row.pct : parseFloat(row.pct) || 0,
+      gb: row.gb === null || row.gb === undefined ? 0 : Number(row.gb),
+      streak: row.streak ?? '—',
+      last10: row.last10 ?? '—',
+      team_slug: row.team_slug || null,
+    }))
+  } catch {
+    return []
+  }
 }
 
 export async function getGameHighlights(limit = 20) {

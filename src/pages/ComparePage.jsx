@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import RadarChart, { STAT_KEYS } from '../components/player/RadarChart'
+import CompareAiSection from '../components/compare/CompareAiSection'
 import ComparePlayerCard, { normalizeHex } from '../components/compare/ComparePlayerCard'
 import PlayerPickerModal from '../components/common/PlayerPickerModal'
 import { getPlayerById, searchPlayers } from '../lib/api'
@@ -98,7 +99,7 @@ export default function ComparePage() {
         <div>
           <h1 className="page-title">Compare Players</h1>
           <p className="page-subtitle">
-            Add players to see their stats overlaid on one radar chart. Use the color picker and "On chart" toggle to customize.
+            Add players to see their stats overlaid on one radar chart. With two or more players, use <b>Explain comparison</b> for an AI-style breakdown (rule-based for now). Use the color picker and &quot;On chart&quot; toggle to customize.
           </p>
         </div>
       </section>
@@ -117,6 +118,8 @@ export default function ComparePage() {
           <p className="radar-empty-hint">Turn on "On chart" for at least one player.</p>
         )}
       </section>
+
+      <CompareAiSection players={comparedPlayers} />
 
       <section className="compare-row">
         {cards.map(c => (

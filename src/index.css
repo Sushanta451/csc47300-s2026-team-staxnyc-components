@@ -29,6 +29,22 @@ body {
     var(--bg);
 }
 
+.supabase-env-banner {
+  padding: 0.65rem 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #0f172a;
+  background: var(--warning);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.supabase-env-banner code {
+  font-size: 0.8125rem;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
 a { color: inherit; text-decoration: none; }
 img { display: block; width: 100%; }
 
@@ -216,10 +232,21 @@ img { display: block; width: 100%; }
   padding: 0.6rem 0.9rem;
   border-radius: 12px;
   font-size: 0.9rem;
+  font-family: inherit;
   font-weight: 600;
+  color: var(--text);
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.04);
   cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+.btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.14);
+}
+.btn:focus-visible {
+  outline: 2px solid rgba(91,140,255,0.55);
+  outline-offset: 2px;
 }
 .btn.primary {
   color: #ffffff;
@@ -893,4 +920,101 @@ tbody tr:last-child td { border-bottom: none; }
   font-size: 0.72rem;
   font-weight: 700;
   text-align: center;
+}
+
+/* Standings: conference blocks + roster links */
+.standings-conf-block { padding-top: 1rem; }
+.standings-conf-title {
+  font-size: 1rem;
+  font-weight: 800;
+  margin: 0 0 0.85rem;
+  letter-spacing: 0.02em;
+}
+.standings-team-link {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(91,140,255,0.35);
+}
+.standings-team-link:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* Player hero: team logo + color (no logo column in DB — from ESPN CDN via teamBranding) */
+.hero-top--team::after { opacity: 0.12; }
+.team-pill--link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.team-pill--link:hover {
+  border-color: rgba(91,140,255,0.35);
+  background: rgba(255,255,255,0.12);
+}
+
+/* Team roster page */
+.roster-header { margin-bottom: 1rem; }
+.roster-buckets { display: grid; gap: 1rem; margin-bottom: 1.5rem; }
+.roster-bucket-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  margin: 0 0 0.65rem;
+}
+.roster-player-link {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.roster-player-link:hover {
+  color: var(--accent);
+  border-bottom-color: rgba(91,140,255,0.45);
+}
+
+/* Compare page: AI insights block */
+.compare-ai-section { margin-bottom: 1rem; }
+.compare-ai-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.compare-ai-title {
+  font-size: 1rem;
+  font-weight: 800;
+  margin: 0 0 0.25rem;
+}
+.compare-ai-sub {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin: 0;
+  max-width: 52rem;
+  line-height: 1.45;
+}
+.compare-ai-code {
+  font-size: 0.78em;
+  padding: 0.08rem 0.28rem;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.06);
+}
+.compare-ai-btn { flex-shrink: 0; }
+.compare-ai-body {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.compare-ai-narrative {
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  margin: 0 0 0.85rem;
+}
+.compare-ai-footnote {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  margin: 0;
 }

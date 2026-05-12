@@ -5,5 +5,9 @@ package-lock.json
 .env.local
 .DS_Store
 *.log
+scripts/output
+scripts/.venv-nba
+scripts/__pycache__
+**/__pycache__
 .vscode
 .idea
