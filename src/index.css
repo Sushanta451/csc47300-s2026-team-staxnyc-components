@@ -353,6 +353,27 @@ img { display: block; width: 100%; }
   gap: 0.8rem;
 }
 
+.player-profile-extra {
+  margin: 0.65rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.player-profile-extra li {
+  margin-bottom: 0.12rem;
+}
+
+.cell-muted {
+  color: var(--muted);
+  font-size: 0.86rem;
+  white-space: nowrap;
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .player-tags { margin-top: 0.9rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
 
 .tag {

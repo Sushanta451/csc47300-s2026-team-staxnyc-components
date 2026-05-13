@@ -1,19 +1,25 @@
 import { supabase } from './supabase'
-import { teamVariantsForQuery } from './teamBranding'
+import { teamNameToSlug, teamVariantsForQuery } from './teamBranding'
+import { resolveNbaFranchiseId } from './nbaTeamIds'
+import { currentNbaSeasonSlug } from './nbaSeason'
 
 export async function getPlayerById(playerId) {
   const { data, error } = await supabase
-    .from('player_stats').select('*').eq('player_id', playerId).single()
-  if (error) throw error
-  return data
+    .from('player_stats').select('*').eq('player_id', String(playerId)).maybeSingle()
+  if (error && error.code !== 'PGRST116') throw error
+  return data ?? null
 }
 
-export async function getPlayerGames(playerId, limit = 5) {
-  const { data, error } = await supabase
-    .from('player_games').select('*').eq('player_id', playerId)
-    .order('game_date', { ascending: false }).limit(limit)
-  if (error) throw error
-  return data
+export async function getPlayerGames(playerId, limit = 15) {
+  try {
+    const { data, error } = await supabase
+      .from('player_games').select('*').eq('player_id', String(playerId))
+      .order('game_date', { ascending: false }).limit(limit)
+    if (error) return []
+    return data || []
+  } catch {
+    return []
+  }
 }
 
 export async function searchPlayers(query, limit = 12) {
@@ -40,6 +46,54 @@ export async function getPlayersForTeamIdentity(identity) {
 }
 
 /**
+ * Official roster from `nba_team_rosters` (CommonTeamRoster sync), merged with season stats from `player_stats`.
+ * Falls back to empty list if the table is missing or has no rows for this team/season.
+ */
+export async function getTeamRosterByTeamId(teamId, season) {
+  if (teamId == null || teamId === '') return []
+  const seasonStr = season || currentNbaSeasonSlug()
+  const tid = typeof teamId === 'string' ? parseInt(teamId, 10) : teamId
+  if (Number.isNaN(tid)) return []
+
+  const { data: roster, error } = await supabase
+    .from('nba_team_rosters')
+    .select('player_id,player_name,jersey_number,position,height,weight,birth_date,school')
+    .eq('team_id', tid)
+    .eq('season', seasonStr)
+    .order('player_name', { ascending: true })
+
+  if (error || !roster?.length) return []
+
+  const ids = [...new Set(roster.map((r) => r.player_id).filter(Boolean))]
+  const { data: statsRows } = await supabase
+    .from('player_stats')
+    .select('player_id,ppg,rpg,apg')
+    .in('player_id', ids)
+
+  const statsById = Object.fromEntries((statsRows || []).map((s) => [String(s.player_id), s]))
+
+  return roster.map((r) => {
+    const sid = String(r.player_id)
+    const s = statsById[sid]
+    const jn = r.jersey_number != null && r.jersey_number !== '' ? r.jersey_number : null
+    return {
+      player_id: sid,
+      player_name: r.player_name,
+      team: null,
+      position: r.position ?? '—',
+      ppg: s?.ppg ?? null,
+      rpg: s?.rpg ?? null,
+      apg: s?.apg ?? null,
+      jersey_number: jn,
+      height: r.height ?? null,
+      weight: r.weight ?? null,
+      birth_date: r.birth_date ?? null,
+      school: r.school ?? null,
+    }
+  })
+}
+
+/**
  * Live standings from Supabase `nba_standings`. Returns [] if the table is absent, empty, or unreadable
  * so the UI can fall back to static data.
  */
@@ -54,6 +108,7 @@ export async function getStandings() {
     return data.map((row) => ({
       conference: row.conference,
       team: row.team,
+      team_id: row.team_id != null ? Number(row.team_id) : resolveNbaFranchiseId(row.team),
       rank: row.rank,
       wins: row.wins,
       losses: row.losses,
@@ -61,7 +116,7 @@ export async function getStandings() {
       gb: row.gb === null || row.gb === undefined ? 0 : Number(row.gb),
       streak: row.streak ?? '—',
       last10: row.last10 ?? '—',
-      team_slug: row.team_slug || null,
+      team_slug: row.team_slug || teamNameToSlug(row.team),
     }))
   } catch {
     return []

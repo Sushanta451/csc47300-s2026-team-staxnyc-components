@@ -55,12 +55,14 @@ The sync writes to **`public.nba_standings`**. If that table does not exist, you
 **Apply the migration** against the **same** Supabase project as your URL and keys:
 
 1. Supabase Dashboard → **SQL Editor**.
-2. Open and copy the full contents of [`supabase/migrations/20260513000000_nba_standings.sql`](../supabase/migrations/20260513000000_nba_standings.sql).
-3. Run the script once.
+2. Open and run, in order, the full contents of:
+   - [`supabase/migrations/20260513000000_nba_standings.sql`](../supabase/migrations/20260513000000_nba_standings.sql)
+   - [`supabase/migrations/20260514100000_player_games_rosters.sql`](../supabase/migrations/20260514100000_player_games_rosters.sql)  
+     (adds `nba_standings.team_id`, `player_games`, `nba_team_rosters`, and optional columns on `player_stats`).
 
 If your team uses the Supabase CLI with this repo linked, you can apply migrations with your usual workflow instead (e.g. `supabase db push`).
 
-**Optional `--players`:** Upserts `player_stats`. That table must already exist in your project with a **unique** (or primary) constraint on `player_id` for upserts to succeed.
+**`player_stats`:** must already exist with a **unique** (or primary) constraint on `player_id` for `--players` upserts.
 
 ### 5. Run the sync
 
@@ -73,24 +75,31 @@ npm run sync:nba
 The first run may take a bit longer while pip installs into `scripts/.venv-nba`.
 
 ```bash
-# Also sync per-game player rows into player_stats (slower)
+# Standings + LeagueDash player_stats + CommonTeamRoster (nba_team_rosters) + merged bio fields
 npm run sync:nba -- --players
 
-# Optional: season override (NBA string format)
-NBA_SEASON=2024-25 npm run sync:nba
+# After player_stats exists: recent game logs (one API call per player — can take a while)
+npm run sync:nba -- --games
+npm run sync:nba -- --games --games-max-players 80 --games-per-player 10
+
+# Optional: patch country + draft from CommonPlayerInfo (first N players when used with --players)
+npm run sync:nba -- --players --enrich --enrich-limit 40
+
+# Season override (NBA string format)
+NBA_SEASON=2024-25 npm run sync:nba -- --players
 ```
 
 Equivalent without npm:
 
 ```bash
 bash scripts/run_nba_sync.sh
-bash scripts/run_nba_sync.sh --players
+bash scripts/run_nba_sync.sh -- --players --games
 ```
 
 ### 6. Verify
 
-- **Supabase:** Table Editor → schema **`public`** → **`nba_standings`** — you should see rows after a successful sync.
-- **App:** Run `npm run dev` and open the standings UI; it should prefer live data when the table is populated (see [`docs/LIVE_STANDINGS.md`](./LIVE_STANDINGS.md)).
+- **Supabase:** Table Editor → **`nba_standings`**, **`nba_team_rosters`**, **`player_stats`**, **`player_games`** (after you run the matching flags).
+- **App:** `npm run dev` — player profiles use **`player_stats`** + **`player_games`**; team rosters prefer **`nba_team_rosters`** (falls back to `player_stats` by team name).
 
 ### 7. Troubleshooting
 
@@ -98,7 +107,7 @@ bash scripts/run_nba_sync.sh --players
 |---------|----------------|
 | `Supabase credentials missing` / `Missing key` | `SUPABASE_SERVICE_ROLE_KEY` is set in **repo root** `.env`, non-empty, correct project. Not the anon key; not a `VITE_` name. |
 | `Missing URL` | `SUPABASE_URL` or `VITE_SUPABASE_URL` in `.env`. |
-| `PGRST205` / table not in schema cache | Run the `nba_standings` migration SQL on this project. Confirm `.env` points at the same project where you ran it. |
+| `PGRST205` / table not in schema cache | Run both SQL migrations in §4. Confirm `.env` points at the same project. |
 | `zsh: command not found: #` | You pasted a **comment line** starting with `#` as a command. Run only the command lines, or put comments on their own line in a script. |
 | Wrong data or empty after “success” | Confirm URL and keys are all for the **same** Supabase project. |
 
@@ -108,19 +117,22 @@ bash scripts/run_nba_sync.sh --players
 
 | Target table | Source (nba_api) | When |
 |--------------|------------------|------|
-| `nba_standings` | `LeagueStandingsV3` | Default every run |
-| `player_stats` | `LeagueDashPlayerStats` (PerGame) | Only with `--players` |
+| `nba_standings` | `LeagueStandingsV3` | Default every run (`team_id` included for roster routes) |
+| `player_stats` | `LeagueDashPlayerStats` + roster merge | `--players` |
+| `nba_team_rosters` | `CommonTeamRoster` (all 30 teams) | `--players` |
+| `player_games` | `PlayerGameLog` | `--games` (uses `player_id` list from `player_stats`) |
+| Profile patches | `CommonPlayerInfo` | `--enrich` (with `--players`, or alone against existing `player_stats`) |
 
 Standings rows use **full team names** from `nba_api.stats.static.teams` (e.g. `Los Angeles Lakers`) and a **`team_slug`** compatible with roster URLs (`/team/{slug}/roster`).
 
-Player rows include per-game **PTS/REB/AST/FG%**, **GP**, **MIN** (as `mpg`), **season**, and **team** as full name. **Height / weight / jersey** are placeholders (`—`, `0`) unless you extend the script (e.g. `commonplayerinfo` per player). **Position** is filled when the NBA response includes it; otherwise `—`.
+Player rows include per-game **PTS/REB/AST/FG%**, **GP**, **MIN** (as `mpg`), **season**, and **team** as full name. With **`--players`**, **CommonTeamRoster** fills **height, weight, jersey, birth_date, school** on `player_stats` and writes **`nba_team_rosters`**. **`--enrich`** adds **country** and **draft** fields from **CommonPlayerInfo** (rate-limited). **`--games`** fills **`player_games`** (matchup, opponent, box line).
 
 ## Reference: prerequisites (summary)
 
 1. **Supabase service role key** — `SUPABASE_SERVICE_ROLE_KEY` in `.env` or `.env.local` (non-empty). Never `VITE_`.
 2. **Project URL** — `SUPABASE_URL` or `VITE_SUPABASE_URL`.
 3. **Env merge** — `.env` then `.env.local`; only non-empty `.env.local` values override.
-4. **Tables** — `nba_standings` from the migration above; `player_stats` optional with `--players` and correct constraints.
+4. **Tables** — `nba_standings` + `20260514100000_player_games_rosters.sql` (rosters / game logs / `team_id`); existing `player_stats` with unique `player_id`.
 5. **RLS** — Service role bypasses RLS for writes.
 
 ## Legal / ops

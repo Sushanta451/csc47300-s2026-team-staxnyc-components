@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import standingsData from '../data/standings'
-import { getPlayersForTeamIdentity, getStandings } from '../lib/api'
+import { getPlayersForTeamIdentity, getStandings, getTeamRosterByTeamId } from '../lib/api'
 import { getTeamIdentityFromSlug } from '../lib/teamBranding'
+import { resolveNbaFranchiseId } from '../lib/nbaTeamIds'
+import { currentNbaSeasonSlug } from '../lib/nbaSeason'
 
 function positionBucket(pos) {
   if (!pos) return 'Other'
@@ -38,6 +40,12 @@ export default function TeamRosterPage() {
   )
   const teamLabel = identity?.canonicalName ?? null
 
+  const standingRow = useMemo(
+    () => (teamLabel ? standingsRef.find((r) => r.team === teamLabel) : null),
+    [standingsRef, teamLabel],
+  )
+  const franchiseId = standingRow?.team_id ?? resolveNbaFranchiseId(teamLabel)
+
   const [players, setPlayers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -54,7 +62,15 @@ export default function TeamRosterPage() {
       setLoading(true)
       setError('')
       try {
-        const rows = await getPlayersForTeamIdentity(identity)
+        const season =
+          (typeof import.meta !== 'undefined' && import.meta.env?.VITE_NBA_SEASON) || currentNbaSeasonSlug()
+        let rows = []
+        if (franchiseId) {
+          rows = await getTeamRosterByTeamId(franchiseId, season)
+        }
+        if (!rows.length) {
+          rows = await getPlayersForTeamIdentity(identity)
+        }
         if (!cancelled) setPlayers(rows)
       } catch (e) {
         if (!cancelled) setError(e.message || 'Failed to load roster')
@@ -63,7 +79,7 @@ export default function TeamRosterPage() {
       }
     })()
     return () => { cancelled = true }
-  }, [identity])
+  }, [identity, franchiseId])
 
   const byBucket = useMemo(() => {
     const m = {}
@@ -74,8 +90,6 @@ export default function TeamRosterPage() {
     }
     return m
   }, [players])
-
-  const standingRow = standingsRef.find((r) => r.team === teamLabel)
 
   if (!teamSlug) return null
 
@@ -107,8 +121,10 @@ export default function TeamRosterPage() {
       {!loading && !error && players.length === 0 && (
         <div className="card panel" style={{ padding: '2rem', textAlign: 'center' }}>
           <p style={{ color: 'var(--muted)' }}>
-            No players found for <strong>{teamLabel}</strong>. Ensure <code>player_stats.team</code> matches this
-            team name or tricode ({identity?.tricode?.toUpperCase() ?? '—'}) for players on this roster.
+            No roster found for <strong>{teamLabel}</strong>. Run{' '}
+            <code>npm run sync:nba -- --players</code> to load <code>nba_team_rosters</code> and{' '}
+            <code>player_stats</code>, or use <code>--games</code> for recent games. Static fallback uses{' '}
+            <code>player_stats</code> by team name / tricode ({identity?.tricode?.toUpperCase() ?? '—'}).
           </p>
         </div>
       )}

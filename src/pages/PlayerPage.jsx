@@ -17,7 +17,7 @@ export default function PlayerPage() {
       try {
         const [s, g] = await Promise.all([
           getPlayerById(id),
-          getPlayerGames(id, 5),
+          getPlayerGames(id, 15),
         ])
         if (s) setStats(s)
         if (g) setGames(g)
@@ -80,6 +80,16 @@ export default function PlayerPage() {
         <section className="lower-grid">
           <PointsTrendChart games={games} avgPpg={stats.ppg} />
           <RecentGamesTable games={games} />
+        </section>
+      )}
+
+      {games.length === 0 && (
+        <section className="card panel" style={{ marginTop: '1rem', padding: '1.25rem' }}>
+          <p style={{ color: 'var(--muted)', margin: 0, fontSize: '0.95rem' }}>
+            No recent games in the database yet. After <code>player_stats</code> exists, run{' '}
+            <code>npm run sync:nba -- --games</code> (optionally with <code>--games-max-players 80</code> for a
+            quicker first pass) to pull <strong>PlayerGameLog</strong> rows into <code>player_games</code>.
+          </p>
         </section>
       )}
 

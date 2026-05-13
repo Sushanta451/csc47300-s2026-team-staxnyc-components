@@ -3,12 +3,17 @@
 Sync NBA.com stats into Supabase using the swar/nba_api client.
 
   - Default: standings -> public.nba_standings (upsert on conference, team)
-  - With --players: also LeagueDashPlayerStats -> public.player_stats (upsert on player_id)
+  - With --players: LeagueDashPlayerStats -> public.player_stats; CommonTeamRoster -> nba_team_rosters;
+    roster fields merged into player_stats (height, weight, jersey, birth_date, school).
+  - With --games: PlayerGameLog -> public.player_games (uses player_ids from player_stats in Supabase).
+  - With --enrich: CommonPlayerInfo patches country + draft fields (rate-limited; see --enrich-limit).
 
 Requires SUPABASE_SERVICE_ROLE_KEY (never expose in Vite). URL from SUPABASE_URL or VITE_SUPABASE_URL.
 
   npm run sync:nba
   npm run sync:nba -- --players
+  npm run sync:nba -- --players --games
+  npm run sync:nba -- --players --enrich
 
 See docs/NBA_API_SYNC.md
 """
@@ -18,6 +23,7 @@ import argparse
 import os
 import re
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -136,7 +142,6 @@ def apply_full_team_names(rows: list[dict], id_to_full: dict[int, str]) -> None:
         if tid_int is not None and tid_int in id_to_full:
             r["team"] = id_to_full[tid_int]
         r["team_slug"] = team_name_to_slug(r["team"])
-        r.pop("team_id", None)
 
 
 def fetch_standings_payload(season: str) -> list[dict]:
@@ -163,6 +168,7 @@ def fetch_standings_payload(season: str) -> list[dict]:
         {
             "conference": r["conference"],
             "team": r["team"],
+            "team_id": int(r["team_id"]) if r.get("team_id") is not None else None,
             "rank": r["rank"],
             "wins": r["wins"],
             "losses": r["losses"],
@@ -177,7 +183,104 @@ def fetch_standings_payload(season: str) -> list[dict]:
     ]
 
 
-def fetch_player_stats_rows(season: str) -> list[dict]:
+def parse_nba_game_date(raw) -> str | None:
+    if not raw:
+        return None
+    s = str(raw).strip()
+    for fmt in ("%b %d, %Y", "%B %d, %Y"):
+        try:
+            return datetime.strptime(s, fmt).date().isoformat()
+        except ValueError:
+            continue
+    return None
+
+
+def matchup_opponent(matchup: str) -> str:
+    m = (matchup or "").strip()
+    if " vs. " in m:
+        return m.split(" vs. ")[-1].strip()
+    if " @ " in m:
+        return "@" + m.split(" @ ")[-1].strip()
+    return m or "—"
+
+
+def parse_jersey_int(raw) -> int:
+    s = str(raw or "").strip()
+    if not s or not s.isdigit():
+        return 0
+    return int(s)
+
+
+def parse_weight_int(raw) -> int:
+    try:
+        return int(float(str(raw).strip()))
+    except (TypeError, ValueError):
+        return 0
+
+
+def fetch_team_rosters_payload(season: str, pause: float = 0.45) -> tuple[list[dict], dict[str, dict]]:
+    """CommonTeamRoster for all NBA teams -> rows for nba_team_rosters + meta keyed by player_id for player_stats merge."""
+    from nba_api.stats.endpoints import commonteamroster
+    from nba_api.stats.static import teams as teams_static
+
+    table_rows: list[dict] = []
+    meta: dict[str, dict] = {}
+    teams_list = teams_static.get_teams()
+    now_iso = datetime.now(timezone.utc).isoformat()
+    for idx, t in enumerate(teams_list):
+        tid = int(t["id"])
+        full = t["full_name"]
+        if pause > 0 and idx:
+            time.sleep(pause)
+        obj = commonteamroster.CommonTeamRoster(team_id=tid, season=season, timeout=90)
+        d = obj.get_dict()
+        rs = next((x for x in (d.get("resultSets") or []) if x.get("name") == "CommonTeamRoster"), None)
+        if not rs:
+            continue
+        headers = rs.get("headers") or []
+        for row in rs.get("rowSet") or []:
+            rec = dict(zip(headers, row))
+            pid = rec.get("PLAYER_ID")
+            if pid is None:
+                continue
+            pid_s = str(int(pid))
+            jersey = str(rec.get("NUM") or "").strip()
+            height = str(rec.get("HEIGHT") or "").strip() or "—"
+            w_raw = rec.get("WEIGHT")
+            weight_lbs = parse_weight_int(w_raw)
+            birth = str(rec.get("BIRTH_DATE") or "").strip() or None
+            school = str(rec.get("SCHOOL") or "").strip() or None
+            pos = str(rec.get("POSITION") or "").strip() or "—"
+            name = str(rec.get("PLAYER") or "").strip()
+            w_str = str(w_raw).strip() if w_raw is not None else None
+            table_rows.append(
+                {
+                    "season": season,
+                    "team_id": tid,
+                    "team_name": full,
+                    "player_id": pid_s,
+                    "player_name": name,
+                    "jersey_number": jersey or None,
+                    "position": pos,
+                    "height": height,
+                    "weight": w_str,
+                    "birth_date": birth,
+                    "school": school,
+                    "updated_at": now_iso,
+                },
+            )
+            meta[pid_s] = {
+                "height": height,
+                "weight": weight_lbs,
+                "jersey_number": parse_jersey_int(jersey),
+                "birth_date": birth,
+                "school": school,
+            }
+    print(f"Fetched {len(table_rows)} roster slots across {len(teams_list)} teams.")
+    return table_rows, meta
+
+
+def fetch_player_stats_rows(season: str, roster_meta: dict[str, dict] | None = None) -> list[dict]:
     from nba_api.stats.endpoints import leaguedashplayerstats
     from nba_api.stats.static import teams as teams_static
 
@@ -203,6 +306,7 @@ def fetch_player_stats_rows(season: str) -> list[dict]:
         pid = rec.get("PLAYER_ID")
         if pid is None:
             continue
+        pid_s = str(int(pid))
         abbr = (rec.get("TEAM_ABBREVIATION") or "").strip().upper()
         team_full = abbr_to_full.get(abbr) or abbr
         fg = rec.get("FG_PCT")
@@ -225,23 +329,93 @@ def fetch_player_stats_rows(season: str) -> list[dict]:
                 return default
 
         pos = rec.get("POSITION") or rec.get("PLAYER_POSITION") or "—"
+        extra = (roster_meta or {}).get(pid_s, {})
+        height = extra.get("height") or "—"
+        weight = extra.get("weight", 0)
+        jersey_number = extra.get("jersey_number", 0)
+        birth_date = extra.get("birth_date")
+        school = extra.get("school")
+        row_out: dict = {
+            "player_id": pid_s,
+            "player_name": (rec.get("PLAYER_NAME") or "").strip(),
+            "team": team_full,
+            "position": pos if str(pos).strip() else "—",
+            "height": height,
+            "weight": weight,
+            "jersey_number": jersey_number,
+            "ppg": round(fnum(rec.get("PTS")), 1),
+            "rpg": round(fnum(rec.get("REB")), 1),
+            "apg": round(fnum(rec.get("AST")), 1),
+            "fg_pct": fg_pct,
+            "season": season,
+            "games_played": inum(rec.get("GP")),
+            "mpg": round(fnum(rec.get("MIN")), 1),
+        }
+        if birth_date:
+            row_out["birth_date"] = birth_date
+        if school:
+            row_out["school"] = school
+        out.append(row_out)
+    return out
+
+
+def fetch_player_game_log_rows(player_id: str, season: str, limit: int) -> list[dict]:
+    from nba_api.stats.endpoints import playergamelog
+
+    obj = playergamelog.PlayerGameLog(
+        player_id=player_id,
+        season=season,
+        season_type_all_star="Regular Season",
+        timeout=75,
+    )
+    d = obj.get_dict()
+    rs = next((x for x in (d.get("resultSets") or []) if x.get("name") == "PlayerGameLog"), None)
+    if not rs:
+        return []
+    headers = rs.get("headers") or []
+    now_iso = datetime.now(timezone.utc).isoformat()
+    out: list[dict] = []
+    for row in (rs.get("rowSet") or [])[:limit]:
+        rec = dict(zip(headers, row))
+        gd = parse_nba_game_date(rec.get("GAME_DATE"))
+        if not gd:
+            continue
+        gid = rec.get("Game_ID")
+        matchup = str(rec.get("MATCHUP") or "")
+
+        def ig(x, default=0):
+            try:
+                return int(float(x))
+            except (TypeError, ValueError):
+                return default
+
+        def fg(x):
+            try:
+                return float(x)
+            except (TypeError, ValueError):
+                return None
+
         out.append(
             {
-                "player_id": str(int(pid)),
-                "player_name": (rec.get("PLAYER_NAME") or "").strip(),
-                "team": team_full,
-                "position": pos if str(pos).strip() else "—",
-                "height": "—",
-                "weight": 0,
-                "jersey_number": 0,
-                "ppg": round(fnum(rec.get("PTS")), 1),
-                "rpg": round(fnum(rec.get("REB")), 1),
-                "apg": round(fnum(rec.get("AST")), 1),
-                "fg_pct": fg_pct,
+                "player_id": str(int(rec.get("Player_ID") or rec.get("PLAYER_ID") or player_id)),
+                "game_id": str(gid or ""),
                 "season": season,
-                "games_played": inum(rec.get("GP")),
-                "mpg": round(fnum(rec.get("MIN")), 1),
-            }
+                "game_date": gd,
+                "matchup": matchup,
+                "opponent": matchup_opponent(matchup),
+                "wl": str(rec.get("WL") or "").strip() or None,
+                "min": fg(rec.get("MIN")),
+                "pts": ig(rec.get("PTS")),
+                "reb": ig(rec.get("REB")),
+                "ast": ig(rec.get("AST")),
+                "fgm": ig(rec.get("FGM")),
+                "fga": ig(rec.get("FGA")),
+                "fg3m": ig(rec.get("FG3M")),
+                "fg3a": ig(rec.get("FG3A")),
+                "ftm": ig(rec.get("FTM")),
+                "fta": ig(rec.get("FTA")),
+                "updated_at": now_iso,
+            },
         )
     return out
 
@@ -301,26 +475,185 @@ def upsert_players(client, rows: list[dict], chunk: int = 80) -> None:
     print(f"Done. Total players: {len(rows)}")
 
 
+def upsert_team_rosters(client, rows: list[dict], chunk: int = 120) -> None:
+    if not rows:
+        print("No team roster rows.")
+        return
+    for i in range(0, len(rows), chunk):
+        batch = rows[i : i + chunk]
+        client.table("nba_team_rosters").upsert(batch, on_conflict="season,team_id,player_id").execute()
+        print(f"Upserted nba_team_rosters {i + 1}-{i + len(batch)} / {len(rows)}")
+    print(f"Done. Total roster rows: {len(rows)}")
+
+
+def upsert_player_games(client, rows: list[dict], chunk: int = 250) -> None:
+    if not rows:
+        print("No player_games rows.")
+        return
+    for i in range(0, len(rows), chunk):
+        batch = rows[i : i + chunk]
+        client.table("player_games").upsert(batch, on_conflict="player_id,game_id").execute()
+        print(f"Upserted player_games {i + 1}-{i + len(batch)} / {len(rows)}")
+    print(f"Done. Total game rows: {len(rows)}")
+
+
+def fetch_all_player_ids(client) -> list[str]:
+    out: list[str] = []
+    page = 0
+    page_size = 1000
+    while True:
+        res = (
+            client.table("player_stats")
+            .select("player_id")
+            .order("player_id")
+            .range(page * page_size, (page + 1) * page_size - 1)
+            .execute()
+        )
+        data = res.data or []
+        for r in data:
+            pid = r.get("player_id")
+            if pid is not None:
+                out.append(str(pid))
+        if len(data) < page_size:
+            break
+        page += 1
+    return out
+
+
+def sync_all_player_games(
+    client,
+    season: str,
+    per_player: int,
+    max_players: int | None,
+    pause: float,
+) -> None:
+    ids = fetch_all_player_ids(client)
+    if max_players is not None:
+        ids = ids[:max_players]
+    print(f"Syncing player_games for {len(ids)} players (last {per_player} games each)...")
+    all_rows: list[dict] = []
+    for i, pid in enumerate(ids):
+        if pause > 0 and i:
+            time.sleep(pause)
+        try:
+            all_rows.extend(fetch_player_game_log_rows(pid, season, per_player))
+        except Exception as e:
+            print(f"Warning: game log failed for {pid}: {e}", file=sys.stderr)
+        if (i + 1) % 100 == 0:
+            print(f"  ... {i + 1}/{len(ids)} players")
+    upsert_player_games(client, all_rows)
+
+
+def enrich_players_common_info(client, player_ids: list[str], pause: float) -> None:
+    from nba_api.stats.endpoints import commonplayerinfo
+
+    if not player_ids:
+        print("No players to enrich.")
+        return
+    print(f"Enriching {len(player_ids)} players from CommonPlayerInfo...")
+    for i, pid in enumerate(player_ids):
+        if pause > 0 and i:
+            time.sleep(pause)
+        try:
+            obj = commonplayerinfo.CommonPlayerInfo(player_id=pid, timeout=75)
+            d = obj.get_dict()
+            rs = next((x for x in (d.get("resultSets") or []) if x.get("name") == "CommonPlayerInfo"), None)
+            if not rs or not rs.get("rowSet"):
+                continue
+            headers = rs.get("headers") or []
+            rec = dict(zip(headers, rs["rowSet"][0]))
+            upd = {
+                "country": str(rec.get("COUNTRY") or "").strip() or None,
+                "draft_year": str(rec.get("DRAFT_YEAR") or "").strip() or None,
+                "draft_round": str(rec.get("DRAFT_ROUND") or "").strip() or None,
+                "draft_number": str(rec.get("DRAFT_NUMBER") or "").strip() or None,
+            }
+            upd = {k: v for k, v in upd.items() if v}
+            if not upd:
+                continue
+            client.table("player_stats").update(upd).eq("player_id", pid).execute()
+        except Exception as e:
+            print(f"Warning: enrich failed for {pid}: {e}", file=sys.stderr)
+        if (i + 1) % 25 == 0:
+            print(f"  ... enriched {i + 1}/{len(player_ids)}")
+    print("Enrichment pass complete.")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--season", default=os.environ.get("NBA_SEASON") or default_nba_season())
-    parser.add_argument("--players", action="store_true", help="Also upsert player_stats from LeagueDashPlayerStats")
+    parser.add_argument("--players", action="store_true", help="Upsert player_stats + nba_team_rosters (LeagueDash + CommonTeamRoster)")
     parser.add_argument(
         "--skip-standings",
         action="store_true",
-        help="Only run player sync (requires --players)",
+        help="Skip nba_standings (use with --players, --games, and/or --enrich)",
+    )
+    parser.add_argument(
+        "--games",
+        action="store_true",
+        help="Upsert player_games from PlayerGameLog (player_ids from player_stats in Supabase)",
+    )
+    parser.add_argument("--games-per-player", type=int, default=12, help="Recent games per player for --games")
+    parser.add_argument(
+        "--games-max-players",
+        type=int,
+        default=None,
+        help="Optional cap on players for --games (default: all rows in player_stats)",
+    )
+    parser.add_argument(
+        "--game-log-pause",
+        type=float,
+        default=0.35,
+        help="Seconds between PlayerGameLog requests (politeness to stats.nba.com)",
+    )
+    parser.add_argument(
+        "--enrich",
+        action="store_true",
+        help="Patch player_stats from CommonPlayerInfo (country, draft fields)",
+    )
+    parser.add_argument("--enrich-limit", type=int, default=50, help="Max players for --enrich when not combined with full --players list")
+    parser.add_argument(
+        "--enrich-pause",
+        type=float,
+        default=0.4,
+        help="Seconds between CommonPlayerInfo requests",
+    )
+    parser.add_argument(
+        "--roster-pause",
+        type=float,
+        default=0.45,
+        help="Seconds between CommonTeamRoster team requests",
     )
     args = parser.parse_args()
     season = args.season.strip()
     client = supabase_client()
 
-    if args.skip_standings and not args.players:
-        parser.error("--skip-standings requires --players")
+    if args.skip_standings and not (args.players or args.games or args.enrich):
+        parser.error("--skip-standings requires at least one of --players, --games, or --enrich")
 
     if not args.skip_standings:
         upsert_standings(client, fetch_standings_payload(season))
+
     if args.players:
-        upsert_players(client, fetch_player_stats_rows(season))
+        roster_rows, roster_meta = fetch_team_rosters_payload(season, pause=args.roster_pause)
+        upsert_team_rosters(client, roster_rows)
+        players = fetch_player_stats_rows(season, roster_meta)
+        upsert_players(client, players)
+        if args.enrich:
+            lim = min(args.enrich_limit, len(players))
+            enrich_players_common_info(client, [p["player_id"] for p in players[:lim]], args.enrich_pause)
+    elif args.enrich:
+        ids = fetch_all_player_ids(client)[: args.enrich_limit]
+        enrich_players_common_info(client, ids, args.enrich_pause)
+
+    if args.games:
+        sync_all_player_games(
+            client,
+            season,
+            args.games_per_player,
+            args.games_max_players,
+            args.game_log_pause,
+        )
 
 
 if __name__ == "__main__":
