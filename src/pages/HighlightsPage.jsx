@@ -1,20 +1,26 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import HighlightCard from '../components/highlights/HighlightCard'
+import AdminHighlightForm from '../components/highlights/AdminHighlightForm'
+import { useAuth } from '../lib/AuthContext'
 import { getGameHighlights } from '../lib/api'
 import './HighlightsPage.css'
 
 export default function HighlightsPage() {
+  const { isAdmin } = useAuth()
   const [highlights, setHighlights] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    async function load() {
-      const data = await getGameHighlights(20)
-      if (data) setHighlights(data)
-      setLoading(false)
-    }
-    load()
+  const refresh = useCallback(async () => {
+    const data = await getGameHighlights(20)
+    if (data) setHighlights(data)
+    setLoading(false)
   }, [])
+
+  useEffect(() => { refresh() }, [refresh])
+
+  const handleDeleted = (gameId) => {
+    setHighlights(prev => prev.filter(h => String(h.game_id) !== String(gameId)))
+  }
 
   if (loading) return (
     <main className="container">
@@ -34,6 +40,8 @@ export default function HighlightsPage() {
         </h1>
       </div>
 
+      {isAdmin && <AdminHighlightForm onSaved={refresh} />}
+
       {highlights.length === 0 ? (
         <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
           <p style={{ color: 'var(--muted)' }}>No highlights available yet. Check back after tonight's games!</p>
@@ -41,7 +49,7 @@ export default function HighlightsPage() {
       ) : (
         <div className="highlights-grid">
           {highlights.map((h, i) => (
-            <HighlightCard key={h.game_id} highlight={h} index={i} />
+            <HighlightCard key={h.game_id} highlight={h} index={i} onDelete={handleDeleted} />
           ))}
         </div>
       )}

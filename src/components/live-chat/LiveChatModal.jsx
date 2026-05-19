@@ -5,6 +5,7 @@ import {
   getChatMessages,
   postChatMessage,
   subscribeChatMessages,
+  deleteChatMessage,
   getProfilesByIds,
 } from '../../lib/api'
 import './LiveChatModal.css'
@@ -23,7 +24,7 @@ function formatTime(iso) {
 }
 
 export default function LiveChatModal({ gameId, homeTeam, awayTeam, onClose }) {
-  const { user, profile } = useAuth()
+  const { user, profile, isAdmin } = useAuth()
   const [messages, setMessages] = useState([])
   const [authors, setAuthors] = useState({})
   const [draft, setDraft] = useState('')
@@ -60,6 +61,8 @@ export default function LiveChatModal({ gameId, homeTeam, awayTeam, onClose }) {
     const channel = subscribeChatMessages(gameId, (msg) => {
       setMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg])
       enrichAuthors([msg])
+    }, (oldRow) => {
+      setMessages(prev => prev.filter(m => m.id !== oldRow.id))
     })
 
     return () => {
@@ -96,6 +99,17 @@ export default function LiveChatModal({ gameId, homeTeam, awayTeam, onClose }) {
     }
   }
 
+  async function removeMessage(msg) {
+    if (!isAdmin) return
+    if (!window.confirm('Delete this message?')) return
+    try {
+      await deleteChatMessage(msg.id)
+      setMessages(prev => prev.filter(m => m.id !== msg.id))
+    } catch (err) {
+      setError(err?.message || 'Delete failed')
+    }
+  }
+
   return (
     <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div className="modal card panel live-chat-modal">
@@ -127,6 +141,15 @@ export default function LiveChatModal({ gameId, homeTeam, awayTeam, onClose }) {
                   <div className="chat-msg-meta">
                     <span className="chat-msg-name">{displayName}</span>
                     <span className="chat-msg-time">{formatTime(m.created_at)}</span>
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        className="chat-msg-delete"
+                        onClick={() => removeMessage(m)}
+                        title="Delete message (admin)"
+                        aria-label="Delete message"
+                      >&times;</button>
+                    )}
                   </div>
                   <div className="chat-msg-text">{m.body}</div>
                 </div>

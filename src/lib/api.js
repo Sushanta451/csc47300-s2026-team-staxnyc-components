@@ -185,6 +185,32 @@ export async function getGameHighlights(limit = 20) {
   return data
 }
 
+export async function upsertHighlight(row) {
+  const { data, error } = await supabase
+    .from('game_highlights')
+    .upsert(row, { onConflict: 'game_id' })
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function deleteHighlight(gameId) {
+  const { error } = await supabase
+    .from('game_highlights')
+    .delete()
+    .eq('game_id', String(gameId))
+  if (error) throw error
+}
+
+export async function deleteChatMessage(id) {
+  const { error } = await supabase
+    .from('chat_messages')
+    .delete()
+    .eq('id', id)
+  if (error) throw error
+}
+
 export async function getMyChangeRequests(userId) {
   const { data, error } = await supabase
     .from('profile_change_requests')
@@ -363,13 +389,18 @@ export async function postChatMessage(gameId, userId, body) {
   return data
 }
 
-export function subscribeChatMessages(gameId, onMessage) {
+export function subscribeChatMessages(gameId, onInsert, onDelete) {
   const channel = supabase
     .channel('chat:' + gameId)
     .on(
       'postgres_changes',
       { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: 'game_id=eq.' + gameId },
-      (payload) => { if (payload?.new) onMessage(payload.new) }
+      (payload) => { if (payload?.new) onInsert(payload.new) }
+    )
+    .on(
+      'postgres_changes',
+      { event: 'DELETE', schema: 'public', table: 'chat_messages' },
+      (payload) => { if (payload?.old && onDelete) onDelete(payload.old) }
     )
     .subscribe()
   return channel

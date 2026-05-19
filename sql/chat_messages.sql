@@ -1,6 +1,7 @@
 -- Run this in the Supabase SQL editor.
 -- Creates the chat_messages table for per-game live chat, with RLS so anyone
--- can read, but only the signed-in author can insert their own row.
+-- can read, only the signed-in author can insert their own row, and admins
+-- (user_profiles."Roles" = 'admin') can delete any message.
 
 create table if not exists public.chat_messages (
   id uuid primary key default gen_random_uuid(),
@@ -28,5 +29,22 @@ create policy "chat_messages_insert_own"
   to authenticated
   with check (auth.uid() = user_id);
 
--- Realtime: enable on this table so the React client gets INSERT events.
-alter publication supabase_realtime add table public.chat_messages;
+-- Admin moderation: users with Roles='admin' can delete any message.
+drop policy if exists "chat_messages_delete_admin" on public.chat_messages;
+create policy "chat_messages_delete_admin"
+  on public.chat_messages for delete
+  to authenticated
+  using (
+    exists (
+      select 1 from public.user_profiles
+      where user_profiles.id = auth.uid()
+        and user_profiles."Roles" = 'admin'
+    )
+  );
+
+-- Realtime: enable on this table so the React client gets INSERT/DELETE events.
+do $$
+begin
+  alter publication supabase_realtime add table public.chat_messages;
+exception when duplicate_object then null;
+end $$;
