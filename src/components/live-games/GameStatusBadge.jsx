@@ -13,7 +13,7 @@ export default function GameStatusBadge({ status }) {
       color: isLive ? 'var(--success)' : isScheduled ? 'var(--accent)' : 'var(--muted)',
       border: `1px solid ${isLive ? 'rgba(45,212,191,0.3)' : isScheduled ? 'rgba(91,140,255,0.3)' : 'rgba(255,255,255,0.08)'}`,
     }}>
-      {isLive ? '🔴 LIVE' : isScheduled ? 'Scheduled' : 'Final'}
+      {isLive ? 'LIVE' : isScheduled ? 'Scheduled' : 'Final'}
     </span>
   )
 }

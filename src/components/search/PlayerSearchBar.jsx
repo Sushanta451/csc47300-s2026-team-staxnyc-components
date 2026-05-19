@@ -36,7 +36,6 @@ export default function PlayerSearchBar() {
   return (
     <form className="search" ref={formRef} onSubmit={handleSubmit}>
       <div className="search-box">
-        <span className="search-icon">🔎</span>
         <input
           className="search-input"
           type="text"
