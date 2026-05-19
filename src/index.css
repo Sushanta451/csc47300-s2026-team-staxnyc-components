@@ -1916,7 +1916,154 @@ select.input {
   from { opacity: 0; transform: translateY(20px) scale(0.85); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
+.prediction-badge {
+  margin-top: 0.9rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(79, 140, 255, 0.22), rgba(124, 92, 255, 0.18));
+  border: 1px solid rgba(79, 140, 255, 0.3);
+  box-shadow: 0 4px 18px -10px rgba(79, 140, 255, 0.45);
+}
+
+.prediction-badge-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.prediction-badge-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+.prediction-badge-pct {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+
+.prediction-badge-rationale {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.prediction-badge-btn {
+  margin-top: 0.55rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 7px;
+  border: 1px solid rgba(124, 92, 255, 0.35);
+  background: rgba(13, 18, 30, 0.55);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.prediction-badge-btn:hover {
+  background: linear-gradient(135deg, rgba(79, 140, 255, 0.3), rgba(124, 92, 255, 0.25));
+  border-color: rgba(124, 92, 255, 0.6);
+  color: var(--text);
+  box-shadow: 0 0 12px -2px rgba(79, 140, 255, 0.55);
+}
+
+@media (max-width: 480px) {
+  .prediction-badge-rationale {
+    -webkit-line-clamp: 1;
+    max-width: 100%;
+  }
+}
+
 @keyframes statPop {
   from { opacity: 0; transform: translateY(16px) scale(0.9); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* Ask About Prediction modal */
+.ask-modal { width: min(620px, 96vw); }
+.ask-label {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+}
+.ask-rationale {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.85rem;
+  margin-bottom: 1rem;
+}
+.ask-rationale-text { color: var(--text); font-size: 0.9rem; line-height: 1.45; }
+.ask-form { margin-bottom: 0.9rem; }
+.ask-row { display: flex; gap: 0.5rem; align-items: stretch; }
+.ask-input { flex: 1; }
+.ask-submit {
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white;
+  border-radius: 12px;
+  padding: 0 1.1rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+  font-family: inherit;
+  transition: opacity var(--transition), transform var(--transition);
+  white-space: nowrap;
+}
+.ask-submit:hover:not(:disabled) { transform: translateY(-1px); }
+.ask-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+.ask-answer { min-height: 1rem; }
+.ask-loading { color: var(--muted); font-size: 0.85rem; font-family: var(--font-mono); padding: 0.5rem 0; }
+.ask-info {
+  color: var(--muted);
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed var(--panel-border);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.85rem;
+}
+.ask-error {
+  color: #fca5a5;
+  font-size: 0.85rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+}
+.ask-retry {
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.78rem;
+  font-family: inherit;
+}
+.ask-retry:hover { background: rgba(255, 255, 255, 0.1); }
+.ask-answer-body {
+  background: rgba(79, 140, 255, 0.06);
+  border: 1px solid rgba(79, 140, 255, 0.22);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.9rem;
+}
+.ask-answer-text { color: var(--text); font-size: 0.92rem; line-height: 1.55; }

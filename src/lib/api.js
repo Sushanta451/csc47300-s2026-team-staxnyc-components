@@ -262,3 +262,11 @@ export async function getLiveGames(fromDate, toDate) {
   if (error) throw error
   return data
 }
+
+export async function getPredictionsByGameIds(gameIds) {
+  if (!gameIds.length) return {}
+  const { data, error } = await supabase
+    .from('game_predictions').select('*').in('game_id', gameIds)
+  if (error) return {}
+  return Object.fromEntries((data || []).map(p => [p.game_id, p]))
+}

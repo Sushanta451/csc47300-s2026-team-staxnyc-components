@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import GameCard from '../components/live-games/GameCard'
-import { getLiveGames } from '../lib/api'
+import { getLiveGames, getPredictionsByGameIds } from '../lib/api'
 
 export default function LiveGamesPage() {
   const [games, setGames] = useState([])
+  const [predictions, setPredictions] = useState({})
   const [loading, setLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState('')
 
@@ -15,7 +16,13 @@ export default function LiveGamesPage() {
       dayAfter.setDate(dayAfter.getDate() + 2)
       const endStr = dayAfter.toISOString().slice(0, 10)
       const data = await getLiveGames(todayStr, endStr)
-      setGames(data || [])
+      const list = data || []
+      setGames(list)
+      const scheduledIds = list
+        .filter(g => (g.status || '').toLowerCase() === 'scheduled')
+        .map(g => g.game_id)
+      const preds = await getPredictionsByGameIds(scheduledIds)
+      setPredictions(preds)
       setLastUpdated(new Date().toLocaleTimeString())
     } catch {
       setLastUpdated(new Date().toLocaleTimeString())
@@ -64,21 +71,21 @@ export default function LiveGamesPage() {
       {liveGames.length > 0 && (
         <section style={{ marginBottom: '2rem' }}>
           <h2 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--success)', letterSpacing: '0.1em', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Live Now</h2>
-          <div style={grid}>{liveGames.map(g => <GameCard key={g.game_id} game={g} />)}</div>
+          <div style={grid}>{liveGames.map(g => <GameCard key={g.game_id} game={g} prediction={predictions[g.game_id]} />)}</div>
         </section>
       )}
 
       {scheduledGames.length > 0 && (
         <section style={{ marginBottom: '2rem' }}>
           <h2 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Scheduled</h2>
-          <div style={grid}>{scheduledGames.map(g => <GameCard key={g.game_id} game={g} />)}</div>
+          <div style={grid}>{scheduledGames.map(g => <GameCard key={g.game_id} game={g} prediction={predictions[g.game_id]} />)}</div>
         </section>
       )}
 
       {finalGames.length > 0 && (
         <section style={{ marginBottom: '2rem' }}>
           <h2 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.1em', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Final</h2>
-          <div style={grid}>{finalGames.map(g => <GameCard key={g.game_id} game={g} />)}</div>
+          <div style={grid}>{finalGames.map(g => <GameCard key={g.game_id} game={g} prediction={predictions[g.game_id]} />)}</div>
         </section>
       )}
 

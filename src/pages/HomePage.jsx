@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import PlayerSearchBar from '../components/search/PlayerSearchBar'
 import FeaturedPlayerCard from '../components/home/FeaturedPlayerCard'
 import { getActiveFeaturedPlayers, getLiveGames } from '../lib/api'
+import { currentNbaSeasonSlug } from '../lib/nbaSeason'
 
 function useScrollReveal(ref) {
   useEffect(() => {
@@ -163,7 +164,7 @@ export default function HomePage() {
                 </span>
               </div>
               <div style={{height:16,width:1,background:'var(--panel-border)'}} />
-              <span style={{fontSize:'0.75rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>2024–25 Season</span>
+              <span style={{fontSize:'0.75rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>{currentNbaSeasonSlug()} Season</span>
             </div>
 
             <h1 className="reveal" style={{lineHeight:1.1}}>

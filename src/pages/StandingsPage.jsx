@@ -3,6 +3,7 @@ import standingsData from '../data/standings'
 import ConferenceFilter from '../components/standings/ConferenceFilter'
 import StandingsTable from '../components/standings/StandingsTable'
 import { getStandings } from '../lib/api'
+import { currentNbaSeasonSlug } from '../lib/nbaSeason'
 
 function sortRows(list) {
   return list.slice().sort((a, b) => a.rank !== b.rank ? a.rank - b.rank : b.pct - a.pct)
@@ -156,7 +157,7 @@ export default function StandingsPage() {
             <div>
               <h1 style={{ fontSize: 'clamp(1.25rem,2.3vw,1.65rem)', fontWeight: 800 }}>NBA Team Standings</h1>
               <p style={{ color: 'var(--muted)', fontSize: '0.88rem', marginTop: '0.2rem' }}>
-                Eastern and Western conferences · 2024–25 Season
+                Eastern and Western conferences · {currentNbaSeasonSlug()} Season
               </p>
             </div>
             <ConferenceFilter value={filter} onChange={handleFilter} />
