@@ -185,6 +185,32 @@ export async function getGameHighlights(limit = 20) {
   return data
 }
 
+export async function upsertHighlight(row) {
+  const { data, error } = await supabase
+    .from('game_highlights')
+    .upsert(row, { onConflict: 'game_id' })
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function deleteHighlight(gameId) {
+  const { error } = await supabase
+    .from('game_highlights')
+    .delete()
+    .eq('game_id', String(gameId))
+  if (error) throw error
+}
+
+export async function deleteChatMessage(id) {
+  const { error } = await supabase
+    .from('chat_messages')
+    .delete()
+    .eq('id', id)
+  if (error) throw error
+}
+
 export async function getMyChangeRequests(userId) {
   const { data, error } = await supabase
     .from('profile_change_requests')
@@ -338,4 +364,44 @@ export async function getPredictionsByGameIds(gameIds) {
     .from('game_predictions').select('*').in('game_id', gameIds)
   if (error) return {}
   return Object.fromEntries((data || []).map(p => [p.game_id, p]))
+}
+
+export async function getChatMessages(gameId, limit = 50) {
+  const { data, error } = await supabase
+    .from('chat_messages')
+    .select('*')
+    .eq('game_id', String(gameId))
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  if (error) return []
+  return (data || []).reverse()
+}
+
+export async function postChatMessage(gameId, userId, body) {
+  const trimmed = String(body || '').trim().slice(0, 500)
+  if (!trimmed) throw new Error('Message is empty')
+  const { data, error } = await supabase
+    .from('chat_messages')
+    .insert({ game_id: String(gameId), user_id: userId, body: trimmed })
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export function subscribeChatMessages(gameId, onInsert, onDelete) {
+  const channel = supabase
+    .channel('chat:' + gameId)
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: 'game_id=eq.' + gameId },
+      (payload) => { if (payload?.new) onInsert(payload.new) }
+    )
+    .on(
+      'postgres_changes',
+      { event: 'DELETE', schema: 'public', table: 'chat_messages' },
+      (payload) => { if (payload?.old && onDelete) onDelete(payload.old) }
+    )
+    .subscribe()
+  return channel
 }

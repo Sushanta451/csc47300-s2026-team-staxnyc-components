@@ -2,6 +2,7 @@ import { useState } from 'react'
 import GameStatusBadge from './GameStatusBadge'
 import TeamScoreRow from './TeamScoreRow'
 import AskAboutPredictionModal from '../predictions/AskAboutPredictionModal'
+import LiveChatModal from '../live-chat/LiveChatModal'
 
 function formatGameTime(dateStr) {
   if (!dateStr) return ''
@@ -17,6 +18,7 @@ function shortTeamName(full) {
 
 export default function GameCard({ game, prediction }) {
   const [askOpen, setAskOpen] = useState(false)
+  const [chatOpen, setChatOpen] = useState(false)
   const status = (game.status || '').toLowerCase()
   const isLive = status === 'live'
   const isScheduled = status === 'scheduled' || status === 'upcoming'
@@ -75,6 +77,14 @@ export default function GameCard({ game, prediction }) {
         </div>
       )}
 
+      <button
+        type="button"
+        className="live-chat-open-btn"
+        onClick={() => setChatOpen(true)}
+      >
+        {isLive ? 'Join live chat' : 'Open chat'}
+      </button>
+
       {askOpen && prediction && (
         <AskAboutPredictionModal
           gameId={game.game_id}
@@ -82,6 +92,15 @@ export default function GameCard({ game, prediction }) {
           awayTeam={game.away_team}
           prediction={prediction}
           onClose={() => setAskOpen(false)}
+        />
+      )}
+
+      {chatOpen && (
+        <LiveChatModal
+          gameId={game.game_id}
+          homeTeam={game.home_team}
+          awayTeam={game.away_team}
+          onClose={() => setChatOpen(false)}
         />
       )}
     </div>

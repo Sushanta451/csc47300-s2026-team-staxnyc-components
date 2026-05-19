@@ -2490,6 +2490,104 @@ select.input {
   box-shadow: 0 0 12px -2px rgba(79, 140, 255, 0.55);
 }
 
+.live-chat-open-btn {
+  margin-top: 0.7rem;
+  width: 100%;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  background: rgba(45, 212, 191, 0.08);
+  color: var(--success);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.live-chat-open-btn:hover {
+  background: rgba(45, 212, 191, 0.18);
+  border-color: rgba(45, 212, 191, 0.6);
+  color: var(--text);
+  box-shadow: 0 0 12px -2px rgba(45, 212, 191, 0.45);
+}
+
+.admin-highlight-form .admin-hl-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem 0.9rem;
+}
+
+.admin-highlight-form .admin-hl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-highlight-form .admin-hl-field-wide {
+  grid-column: 1 / -1;
+}
+
+.admin-highlight-form .admin-hl-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted-2);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-highlight-form .admin-hl-warn {
+  font-size: 0.72rem;
+  color: var(--warning);
+  margin-top: 0.2rem;
+}
+
+.admin-highlight-form .admin-hl-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.2rem;
+  flex-wrap: wrap;
+}
+
+.admin-highlight-form .admin-hl-ok {
+  font-size: 0.78rem;
+  color: var(--success);
+}
+
+.admin-highlight-form .admin-hl-err {
+  font-size: 0.78rem;
+  color: var(--danger);
+}
+
+.highlight-admin-delete {
+  margin-top: 0.6rem;
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: var(--danger);
+  border-radius: 7px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.highlight-admin-delete:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--text);
+}
+
+@media (max-width: 540px) {
+  .admin-highlight-form .admin-hl-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 480px) {
   .prediction-badge-rationale {
     -webkit-line-clamp: 1;
