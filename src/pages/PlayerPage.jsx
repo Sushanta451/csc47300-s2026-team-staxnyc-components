@@ -4,7 +4,10 @@ import PlayerHeader from '../components/player/PlayerHeader'
 import RecentGamesTable from '../components/player/RecentGamesTable'
 import PointsTrendChart from '../components/player/PointsTrendChart'
 import PredictionCard from '../components/player/PredictionCard'
+import WembyDunkAnim from '../components/player/WembyDunkAnim'
 import { getPlayerById, getPlayerGames } from '../lib/api'
+
+const WEMBY_ID = '1641705'
 
 export default function PlayerPage() {
   const { id } = useParams()
@@ -51,6 +54,8 @@ export default function PlayerPage() {
           <Link to="/" style={{ color: 'var(--muted)' }}>Players</Link> / <span>{stats.player_name}</span>
         </p>
       </section>
+
+      {id === WEMBY_ID && <WembyDunkAnim />}
 
       <section className="profile-layout">
         <PlayerHeader stats={stats} />
