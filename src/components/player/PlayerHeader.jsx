@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { getPlayerImageUrl, getPlayerInitials } from '../../lib/playerImage'
+import { hasMeaningfulPosition } from '../../lib/playerPosition'
 import { getTeamBranding } from '../../lib/teamBranding'
+import PlayerHeroBanner from './PlayerHeroBanner'
 
 function useCountUp(target, duration = 900, delay = 0) {
   const [val, setVal] = useState(0)
@@ -65,23 +67,6 @@ function AnimatedStatBox({ label, value, accent, delay = 0, rank }) {
   )
 }
 
-function BannerParticles() {
-  const ps = [
-    {x:12,y:25,s:16,d:0,t:3.2},{x:78,y:55,s:11,d:0.8,t:2.8},
-    {x:48,y:18,s:8,d:1.4,t:3.6},{x:88,y:38,s:20,d:0.3,t:2.5},{x:32,y:72,s:9,d:1.1,t:3.0},
-  ]
-  return <>
-    {ps.map((p,i) => (
-      <div key={i} style={{
-        position:'absolute', left:`${p.x}%`, top:`${p.y}%`,
-        fontSize:p.s, opacity:0.1,
-        animation:`particleFloat ${p.t}s ease-in-out ${p.d}s infinite`,
-        pointerEvents:'none', userSelect:'none',
-      }} />
-    ))}
-  </>
-}
-
 function PerformanceRating({ ppg, rpg, apg, teamColor }) {
   const [w, setW] = useState(0)
   const score = Math.min(100, Math.round(
@@ -121,12 +106,10 @@ function PerformanceRating({ ppg, rpg, apg, teamColor }) {
 
 export default function PlayerHeader({ stats }) {
   const [imgStatus, setImgStatus] = useState('loading')
-  const [bannerReady, setBannerReady] = useState(false)
   const [avatarHov, setAvatarHov] = useState(false)
   const [nameVisible, setNameVisible] = useState(false)
 
   useEffect(() => {
-    setTimeout(() => setBannerReady(true), 60)
     setTimeout(() => setNameVisible(true), 200)
   }, [])
 
@@ -141,30 +124,7 @@ export default function PlayerHeader({ stats }) {
     <>
       <article className="card player-hero" style={{ overflow: 'hidden' }}>
 
-        <div className="hero-top" style={{
-          background: `linear-gradient(120deg, ${teamColor}ee, ${teamColor}55)`,
-          position: 'relative', overflow: 'hidden',
-          transformOrigin: 'left',
-        }}>
-          <div style={{ position:'absolute',inset:0, background:'repeating-linear-gradient(118deg,rgba(255,255,255,0.07) 0 6px,transparent 6px 20px)' }} />
-          <BannerParticles />
-          <svg style={{position:'absolute',right:0,bottom:0,opacity:0.1,pointerEvents:'none'}} width="240" height="140" viewBox="0 0 240 140">
-            <path d="M 240 140 Q 120 -20 0 140" fill="none" stroke="white" strokeWidth="2"/>
-            <circle cx="120" cy="45" r="32" fill="none" stroke="white" strokeWidth="1.5"/>
-          </svg>
-          {logoUrl && (
-            <img src={logoUrl} alt={team} onError={e=>e.currentTarget.style.display='none'}
-              style={{ position:'absolute',right:'1.25rem',top:'50%',transform:'translateY(-50%)', height:72,width:72,objectFit:'contain',opacity:0.9,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))' }} />
-          )}
-          {jersey_number && (
-            <div style={{
-              position:'absolute',left:'1.5rem',bottom:'-0.5rem',
-              fontSize:'5rem',fontWeight:900,color:'rgba(255,255,255,0.12)',
-              lineHeight:1,userSelect:'none',fontFamily:'var(--font-mono)',
-            }}>#{jersey_number}</div>
-          )}
-          <div style={{ position:'absolute',inset:0,pointerEvents:'none', background:`radial-gradient(ellipse at 30% 50%, ${teamColor}44, transparent 60%)`, animation:'bannerPulse 3s ease-in-out infinite' }} />
-        </div>
+        <PlayerHeroBanner team={team} jerseyNumber={jersey_number} className="hero-top" />
 
         <div className="hero-body">
           <div className="player-main">
@@ -227,7 +187,7 @@ export default function PlayerHeader({ stats }) {
                 opacity:nameVisible?1:0, transform:nameVisible?'translateY(0)':'translateY(8px)',
                 transition:'opacity 0.4s ease 0.25s, transform 0.4s ease 0.25s',
               }}>
-                {position && <span className="meta-chip">{position}</span>}
+                {hasMeaningfulPosition(position) && <span className="meta-chip">{position}</span>}
                 {height   && <span className="meta-chip">{height}</span>}
                 {weight   && <span className="meta-chip">{weight} lbs</span>}
                 {jersey_number && <span className="meta-chip" style={{color:teamColor,borderColor:`${teamColor}44`}}>#{jersey_number}</span>}

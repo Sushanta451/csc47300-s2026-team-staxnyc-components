@@ -1,0 +1,1207 @@
+{
+  "source": "https://www.basketball-reference.com/leagues/NBA_2026_per_game.html",
+  "season": "2026",
+  "generatedAt": "2026-05-12T23:05:12.154Z",
+  "rows": [
+    {
+      "player_name": "Luka Dončić",
+      "team_abbr": "LAL",
+      "position": "PG",
+      "ppg": "33.5"
+    },
+    {
+      "player_name": "Shai Gilgeous-Alexander",
+      "team_abbr": "OKC",
+      "position": "PG",
+      "ppg": "31.1"
+    },
+    {
+      "player_name": "Anthony Edwards",
+      "team_abbr": "MIN",
+      "position": "SG",
+      "ppg": "28.8"
+    },
+    {
+      "player_name": "Jaylen Brown",
+      "team_abbr": "BOS",
+      "position": "SF",
+      "ppg": "28.7"
+    },
+    {
+      "player_name": "Tyrese Maxey",
+      "team_abbr": "PHI",
+      "position": "PG",
+      "ppg": "28.3"
+    },
+    {
+      "player_name": "Kawhi Leonard",
+      "team_abbr": "LAC",
+      "position": "SF",
+      "ppg": "27.9"
+    },
+    {
+      "player_name": "Donovan Mitchell",
+      "team_abbr": "CLE",
+      "position": "SG",
+      "ppg": "27.9"
+    },
+    {
+      "player_name": "Nikola Jokić",
+      "team_abbr": "DEN",
+      "position": "C",
+      "ppg": "27.7"
+    },
+    {
+      "player_name": "Giannis Antetokounmpo",
+      "team_abbr": "MIL",
+      "position": "PF",
+      "ppg": "27.6"
+    },
+    {
+      "player_name": "Joel Embiid",
+      "team_abbr": "PHI",
+      "position": "C",
+      "ppg": "26.9"
+    },
+    {
+      "player_name": "Lauri Markkanen",
+      "team_abbr": "UTA",
+      "position": "PF",
+      "ppg": "26.7"
+    },
+    {
+      "player_name": "Stephen Curry",
+      "team_abbr": "GSW",
+      "position": "PG",
+      "ppg": "26.6"
+    },
+    {
+      "player_name": "Devin Booker",
+      "team_abbr": "PHO",
+      "position": "SG",
+      "ppg": "26.1"
+    },
+    {
+      "player_name": "Jalen Brunson",
+      "team_abbr": "NYK",
+      "position": "PG",
+      "ppg": "26.0"
+    },
+    {
+      "player_name": "Kevin Durant",
+      "team_abbr": "HOU",
+      "position": "SF",
+      "ppg": "26.0"
+    },
+    {
+      "player_name": "Jamal Murray",
+      "team_abbr": "DEN",
+      "position": "PG",
+      "ppg": "25.4"
+    },
+    {
+      "player_name": "Victor Wembanyama",
+      "team_abbr": "SAS",
+      "position": "C",
+      "ppg": "25.0"
+    },
+    {
+      "player_name": "Deni Avdija",
+      "team_abbr": "POR",
+      "position": "SF",
+      "ppg": "24.2"
+    },
+    {
+      "player_name": "Michael Porter Jr.",
+      "team_abbr": "BRK",
+      "position": "SF",
+      "ppg": "24.2"
+    },
+    {
+      "player_name": "Pascal Siakam",
+      "team_abbr": "IND",
+      "position": "PF",
+      "ppg": "24.0"
+    },
+    {
+      "player_name": "Cade Cunningham",
+      "team_abbr": "DET",
+      "position": "PG",
+      "ppg": "23.9"
+    },
+    {
+      "player_name": "James Harden",
+      "team_abbr": "2TM",
+      "position": "PG",
+      "ppg": "23.6"
+    },
+    {
+      "player_name": "James Harden",
+      "team_abbr": "LAC",
+      "position": "PG",
+      "ppg": "25.4"
+    },
+    {
+      "player_name": "James Harden",
+      "team_abbr": "CLE",
+      "position": "PG",
+      "ppg": "20.5"
+    },
+    {
+      "player_name": "Keyonte George",
+      "team_abbr": "UTA",
+      "position": "PG",
+      "ppg": "23.6"
+    },
+    {
+      "player_name": "Austin Reaves",
+      "team_abbr": "LAL",
+      "position": "SG",
+      "ppg": "23.3"
+    },
+    {
+      "player_name": "Jalen Johnson",
+      "team_abbr": "ATL",
+      "position": "SF",
+      "ppg": "22.5"
+    },
+    {
+      "player_name": "Paolo Banchero",
+      "team_abbr": "ORL",
+      "position": "PF",
+      "ppg": "22.2"
+    },
+    {
+      "player_name": "Jayson Tatum",
+      "team_abbr": "BOS",
+      "position": "PF",
+      "ppg": "21.8"
+    },
+    {
+      "player_name": "Norman Powell",
+      "team_abbr": "MIA",
+      "position": "SG",
+      "ppg": "21.7"
+    },
+    {
+      "player_name": "Brandon Ingram",
+      "team_abbr": "TOR",
+      "position": "SF",
+      "ppg": "21.5"
+    },
+    {
+      "player_name": "Trey Murphy III",
+      "team_abbr": "NOP",
+      "position": "SF",
+      "ppg": "21.5"
+    },
+    {
+      "player_name": "Julius Randle",
+      "team_abbr": "MIN",
+      "position": "PF",
+      "ppg": "21.1"
+    },
+    {
+      "player_name": "Cooper Flagg",
+      "team_abbr": "DAL",
+      "position": "SF",
+      "ppg": "21.0"
+    },
+    {
+      "player_name": "Zion Williamson",
+      "team_abbr": "NOP",
+      "position": "PF",
+      "ppg": "21.0"
+    },
+    {
+      "player_name": "LeBron James",
+      "team_abbr": "LAL",
+      "position": "SF",
+      "ppg": "20.9"
+    },
+    {
+      "player_name": "Nickeil Alexander-Walker",
+      "team_abbr": "ATL",
+      "position": "SG",
+      "ppg": "20.8"
+    },
+    {
+      "player_name": "Shaedon Sharpe",
+      "team_abbr": "POR",
+      "position": "SG",
+      "ppg": "20.8"
+    },
+    {
+      "player_name": "Franz Wagner",
+      "team_abbr": "ORL",
+      "position": "SF",
+      "ppg": "20.6"
+    },
+    {
+      "player_name": "Tyler Herro",
+      "team_abbr": "MIA",
+      "position": "SG",
+      "ppg": "20.5"
+    },
+    {
+      "player_name": "Anthony Davis",
+      "team_abbr": "DAL",
+      "position": "PF",
+      "ppg": "20.4"
+    },
+    {
+      "player_name": "Alperen Şengün",
+      "team_abbr": "HOU",
+      "position": "C",
+      "ppg": "20.4"
+    },
+    {
+      "player_name": "Dillon Brooks",
+      "team_abbr": "PHO",
+      "position": "SF",
+      "ppg": "20.2"
+    },
+    {
+      "player_name": "Brandon Miller",
+      "team_abbr": "CHO",
+      "position": "SF",
+      "ppg": "20.2"
+    },
+    {
+      "player_name": "Bam Adebayo",
+      "team_abbr": "MIA",
+      "position": "C",
+      "ppg": "20.1"
+    },
+    {
+      "player_name": "LaMelo Ball",
+      "team_abbr": "CHO",
+      "position": "PG",
+      "ppg": "20.1"
+    },
+    {
+      "player_name": "Desmond Bane",
+      "team_abbr": "ORL",
+      "position": "SG",
+      "ppg": "20.1"
+    },
+    {
+      "player_name": "Karl-Anthony Towns",
+      "team_abbr": "NYK",
+      "position": "C",
+      "ppg": "20.1"
+    },
+    {
+      "player_name": "Jimmy Butler",
+      "team_abbr": "GSW",
+      "position": "SF",
+      "ppg": "20.0"
+    },
+    {
+      "player_name": "Ty Jerome",
+      "team_abbr": "MEM",
+      "position": "SG",
+      "ppg": "19.7"
+    },
+    {
+      "player_name": "Jalen Duren",
+      "team_abbr": "DET",
+      "position": "C",
+      "ppg": "19.5"
+    },
+    {
+      "player_name": "Ja Morant",
+      "team_abbr": "MEM",
+      "position": "PG",
+      "ppg": "19.5"
+    },
+    {
+      "player_name": "Jaren Jackson Jr.",
+      "team_abbr": "2TM",
+      "position": "C",
+      "ppg": "19.4"
+    },
+    {
+      "player_name": "Jaren Jackson Jr.",
+      "team_abbr": "MEM",
+      "position": "C",
+      "ppg": "19.2"
+    },
+    {
+      "player_name": "Jaren Jackson Jr.",
+      "team_abbr": "UTA",
+      "position": "C",
+      "ppg": "22.3"
+    },
+    {
+      "player_name": "RJ Barrett",
+      "team_abbr": "TOR",
+      "position": "SF",
+      "ppg": "19.3"
+    },
+    {
+      "player_name": "Zach LaVine",
+      "team_abbr": "SAC",
+      "position": "SG",
+      "ppg": "19.2"
+    },
+    {
+      "player_name": "Darius Garland",
+      "team_abbr": "2TM",
+      "position": "PG",
+      "ppg": "18.8"
+    },
+    {
+      "player_name": "Darius Garland",
+      "team_abbr": "CLE",
+      "position": "PG",
+      "ppg": "18.0"
+    },
+    {
+      "player_name": "Darius Garland",
+      "team_abbr": "LAC",
+      "position": "PG",
+      "ppg": "19.9"
+    },
+    {
+      "player_name": "CJ McCollum",
+      "team_abbr": "2TM",
+      "position": "PG",
+      "ppg": "18.7"
+    },
+    {
+      "player_name": "CJ McCollum",
+      "team_abbr": "WAS",
+      "position": "SG",
+      "ppg": "18.8"
+    },
+    {
+      "player_name": "CJ McCollum",
+      "team_abbr": "ATL",
+      "position": "PG",
+      "ppg": "18.7"
+    },
+    {
+      "player_name": "De'Aaron Fox",
+      "team_abbr": "SAS",
+      "position": "PG",
+      "ppg": "18.6"
+    },
+    {
+      "player_name": "Jerami Grant",
+      "team_abbr": "POR",
+      "position": "PF",
+      "ppg": "18.6"
+    },
+    {
+      "player_name": "Kon Knueppel",
+      "team_abbr": "CHO",
+      "position": "SF",
+      "ppg": "18.5"
+    },
+    {
+      "player_name": "DeMar DeRozan",
+      "team_abbr": "SAC",
+      "position": "PF",
+      "ppg": "18.4"
+    },
+    {
+      "player_name": "Amen Thompson",
+      "team_abbr": "HOU",
+      "position": "PG",
+      "ppg": "18.3"
+    },
+    {
+      "player_name": "Evan Mobley",
+      "team_abbr": "CLE",
+      "position": "PF",
+      "ppg": "18.2"
+    },
+    {
+      "player_name": "Scottie Barnes",
+      "team_abbr": "TOR",
+      "position": "PF",
+      "ppg": "18.1"
+    },
+    {
+      "player_name": "Trae Young",
+      "team_abbr": "2TM",
+      "position": "PG",
+      "ppg": "17.9"
+    },
+    {
+      "player_name": "Trae Young",
+      "team_abbr": "ATL",
+      "position": "PG",
+      "ppg": "19.3"
+    },
+    {
+      "player_name": "Trae Young",
+      "team_abbr": "WAS",
+      "position": "PG",
+      "ppg": "15.2"
+    },
+    {
+      "player_name": "Jalen Green",
+      "team_abbr": "PHO",
+      "position": "SG",
+      "ppg": "17.8"
+    },
+    {
+      "player_name": "Saddiq Bey",
+      "team_abbr": "NOP",
+      "position": "SF",
+      "ppg": "17.7"
+    },
+    {
+      "player_name": "Bennedict Mathurin",
+      "team_abbr": "2TM",
+      "position": "SF",
+      "ppg": "17.6"
+    },
+    {
+      "player_name": "Bennedict Mathurin",
+      "team_abbr": "IND",
+      "position": "SF",
+      "ppg": "17.8"
+    },
+    {
+      "player_name": "Bennedict Mathurin",
+      "team_abbr": "LAC",
+      "position": "SF",
+      "ppg": "17.4"
+    },
+    {
+      "player_name": "Coby White",
+      "team_abbr": "2TM",
+      "position": "SG",
+      "ppg": "17.4"
+    },
+    {
+      "player_name": "Coby White",
+      "team_abbr": "CHI",
+      "position": "SG",
+      "ppg": "18.6"
+    },
+    {
+      "player_name": "Coby White",
+      "team_abbr": "CHO",
+      "position": "SG",
+      "ppg": "15.6"
+    },
+    {
+      "player_name": "Kevin Porter Jr.",
+      "team_abbr": "MIL",
+      "position": "PG",
+      "ppg": "17.4"
+    },
+    {
+      "player_name": "Paul George",
+      "team_abbr": "PHI",
+      "position": "PF",
+      "ppg": "17.3"
+    },
+    {
+      "player_name": "Ryan Rollins",
+      "team_abbr": "MIL",
+      "position": "PG",
+      "ppg": "17.3"
+    },
+    {
+      "player_name": "Miles Bridges",
+      "team_abbr": "CHO",
+      "position": "PF",
+      "ppg": "17.1"
+    },
+    {
+      "player_name": "Chet Holmgren",
+      "team_abbr": "OKC",
+      "position": "PF",
+      "ppg": "17.1"
+    },
+    {
+      "player_name": "Jalen Williams",
+      "team_abbr": "OKC",
+      "position": "SG",
+      "ppg": "17.1"
+    },
+    {
+      "player_name": "Josh Giddey",
+      "team_abbr": "CHI",
+      "position": "PG",
+      "ppg": "17.0"
+    },
+    {
+      "player_name": "Payton Pritchard",
+      "team_abbr": "BOS",
+      "position": "PG",
+      "ppg": "17.0"
+    },
+    {
+      "player_name": "Andrew Nembhard",
+      "team_abbr": "IND",
+      "position": "PG",
+      "ppg": "16.9"
+    },
+    {
+      "player_name": "Kristaps Porziņģis",
+      "team_abbr": "2TM",
+      "position": "C",
+      "ppg": "16.7"
+    },
+    {
+      "player_name": "Kristaps Porziņģis",
+      "team_abbr": "ATL",
+      "position": "C",
+      "ppg": "17.1"
+    },
+    {
+      "player_name": "Kristaps Porziņģis",
+      "team_abbr": "GSW",
+      "position": "C",
+      "ppg": "16.1"
+    },
+    {
+      "player_name": "OG Anunoby",
+      "team_abbr": "NYK",
+      "position": "PF",
+      "ppg": "16.7"
+    },
+    {
+      "player_name": "Stephon Castle",
+      "team_abbr": "SAS",
+      "position": "PG",
+      "ppg": "16.7"
+    },
+    {
+      "player_name": "Dejounte Murray",
+      "team_abbr": "NOP",
+      "position": "PG",
+      "ppg": "16.7"
+    },
+    {
+      "player_name": "Grayson Allen",
+      "team_abbr": "PHO",
+      "position": "SG",
+      "ppg": "16.5"
+    },
+    {
+      "player_name": "Derrick White",
+      "team_abbr": "BOS",
+      "position": "SG",
+      "ppg": "16.5"
+    },
+    {
+      "player_name": "Immanuel Quickley",
+      "team_abbr": "TOR",
+      "position": "PG",
+      "ppg": "16.4"
+    },
+    {
+      "player_name": "Matas Buzelis",
+      "team_abbr": "CHI",
+      "position": "PF",
+      "ppg": "16.3"
+    },
+    {
+      "player_name": "Jrue Holiday",
+      "team_abbr": "POR",
+      "position": "PG",
+      "ppg": "16.3"
+    },
+    {
+      "player_name": "Alex Sarr",
+      "team_abbr": "WAS",
+      "position": "C",
+      "ppg": "16.3"
+    },
+    {
+      "player_name": "Dariq Whitehead",
+      "team_abbr": "MEM",
+      "position": "SF",
+      "ppg": "16.3"
+    },
+    {
+      "player_name": "Aaron Gordon",
+      "team_abbr": "DEN",
+      "position": "PF",
+      "ppg": "16.2"
+    },
+    {
+      "player_name": "VJ Edgecombe",
+      "team_abbr": "PHI",
+      "position": "SG",
+      "ppg": "16.0"
+    },
+    {
+      "player_name": "Domantas Sabonis",
+      "team_abbr": "SAC",
+      "position": "C",
+      "ppg": "15.8"
+    },
+    {
+      "player_name": "Jabari Smith Jr.",
+      "team_abbr": "HOU",
+      "position": "PF",
+      "ppg": "15.8"
+    },
+    {
+      "player_name": "Collin Sexton",
+      "team_abbr": "2TM",
+      "position": "SG",
+      "ppg": "15.4"
+    },
+    {
+      "player_name": "Collin Sexton",
+      "team_abbr": "CHO",
+      "position": "SG",
+      "ppg": "14.2"
+    },
+    {
+      "player_name": "Collin Sexton",
+      "team_abbr": "CHI",
+      "position": "SG",
+      "ppg": "17.5"
+    },
+    {
+      "player_name": "Jarrett Allen",
+      "team_abbr": "CLE",
+      "position": "C",
+      "ppg": "15.4"
+    },
+    {
+      "player_name": "Jaime Jaquez Jr.",
+      "team_abbr": "MIA",
+      "position": "SF",
+      "ppg": "15.4"
+    },
+    {
+      "player_name": "Andrew Wiggins",
+      "team_abbr": "MIA",
+      "position": "SF",
+      "ppg": "15.4"
+    },
+    {
+      "player_name": "Naji Marshall",
+      "team_abbr": "DAL",
+      "position": "SF",
+      "ppg": "15.2"
+    },
+    {
+      "player_name": "Onyeka Okongwu",
+      "team_abbr": "ATL",
+      "position": "C",
+      "ppg": "15.2"
+    },
+    {
+      "player_name": "Russell Westbrook",
+      "team_abbr": "SAC",
+      "position": "SF",
+      "ppg": "15.2"
+    },
+    {
+      "player_name": "Nikola Vučević",
+      "team_abbr": "2TM",
+      "position": "C",
+      "ppg": "15.1"
+    },
+    {
+      "player_name": "Nikola Vučević",
+      "team_abbr": "CHI",
+      "position": "C",
+      "ppg": "16.9"
+    },
+    {
+      "player_name": "Nikola Vučević",
+      "team_abbr": "BOS",
+      "position": "C",
+      "ppg": "9.7"
+    },
+    {
+      "player_name": "Anthony Black",
+      "team_abbr": "ORL",
+      "position": "PG",
+      "ppg": "15.0"
+    },
+    {
+      "player_name": "Kennedy Chandler",
+      "team_abbr": "UTA",
+      "position": "PG",
+      "ppg": "15.0"
+    },
+    {
+      "player_name": "Brice Sensabaugh",
+      "team_abbr": "UTA",
+      "position": "SF",
+      "ppg": "14.9"
+    },
+    {
+      "player_name": "Ayo Dosunmu",
+      "team_abbr": "2TM",
+      "position": "SG",
+      "ppg": "14.8"
+    },
+    {
+      "player_name": "Ayo Dosunmu",
+      "team_abbr": "CHI",
+      "position": "SG",
+      "ppg": "15.0"
+    },
+    {
+      "player_name": "Ayo Dosunmu",
+      "team_abbr": "MIN",
+      "position": "SG",
+      "ppg": "14.4"
+    },
+    {
+      "player_name": "Kyshawn George",
+      "team_abbr": "WAS",
+      "position": "SF",
+      "ppg": "14.8"
+    },
+    {
+      "player_name": "Jaden McDaniels",
+      "team_abbr": "MIN",
+      "position": "PF",
+      "ppg": "14.8"
+    },
+    {
+      "player_name": "Peyton Watson",
+      "team_abbr": "DEN",
+      "position": "SF",
+      "ppg": "14.6"
+    },
+    {
+      "player_name": "Mikal Bridges",
+      "team_abbr": "NYK",
+      "position": "SF",
+      "ppg": "14.4"
+    },
+    {
+      "player_name": "Walker Kessler",
+      "team_abbr": "UTA",
+      "position": "C",
+      "ppg": "14.4"
+    },
+    {
+      "player_name": "Anfernee Simons",
+      "team_abbr": "2TM",
+      "position": "SG",
+      "ppg": "14.3"
+    },
+    {
+      "player_name": "Anfernee Simons",
+      "team_abbr": "BOS",
+      "position": "SG",
+      "ppg": "14.2"
+    },
+    {
+      "player_name": "Anfernee Simons",
+      "team_abbr": "CHI",
+      "position": "SG",
+      "ppg": "15.2"
+    },
+    {
+      "player_name": "Jeremiah Fears",
+      "team_abbr": "NOP",
+      "position": "PG",
+      "ppg": "14.3"
+    },
+    {
+      "player_name": "Cormac Ryan",
+      "team_abbr": "MIL",
+      "position": "SG",
+      "ppg": "14.3"
+    },
+    {
+      "player_name": "Scoot Henderson",
+      "team_abbr": "POR",
+      "position": "PG",
+      "ppg": "14.2"
+    },
+    {
+      "player_name": "P.J. Washington",
+      "team_abbr": "DAL",
+      "position": "PF",
+      "ppg": "14.2"
+    },
+    {
+      "player_name": "Ivica Zubac",
+      "team_abbr": "2TM",
+      "position": "C",
+      "ppg": "14.1"
+    },
+    {
+      "player_name": "Ivica Zubac",
+      "team_abbr": "LAC",
+      "position": "C",
+      "ppg": "14.4"
+    },
+    {
+      "player_name": "Ivica Zubac",
+      "team_abbr": "IND",
+      "position": "C",
+      "ppg": "11.6"
+    },
+    {
+      "player_name": "Tre Jones",
+      "team_abbr": "CHI",
+      "position": "PG",
+      "ppg": "14.1"
+    },
+    {
+      "player_name": "Kelly Oubre Jr.",
+      "team_abbr": "PHI",
+      "position": "SF",
+      "ppg": "14.1"
+    },
+    {
+      "player_name": "Santi Aldama",
+      "team_abbr": "MEM",
+      "position": "PF",
+      "ppg": "14.0"
+    },
+    {
+      "player_name": "Keegan Murray",
+      "team_abbr": "SAC",
+      "position": "PF",
+      "ppg": "14.0"
+    },
+    {
+      "player_name": "Devin Vassell",
+      "team_abbr": "SAS",
+      "position": "SG",
+      "ppg": "13.9"
+    },
+    {
+      "player_name": "Ace Bailey",
+      "team_abbr": "UTA",
+      "position": "SF",
+      "ppg": "13.8"
+    },
+    {
+      "player_name": "Aaron Nesmith",
+      "team_abbr": "IND",
+      "position": "SF",
+      "ppg": "13.8"
+    },
+    {
+      "player_name": "Brandin Podziemski",
+      "team_abbr": "GSW",
+      "position": "SG",
+      "ppg": "13.8"
+    },
+    {
+      "player_name": "Jalen Suggs",
+      "team_abbr": "ORL",
+      "position": "PG",
+      "ppg": "13.8"
+    },
+    {
+      "player_name": "De'Andre Hunter",
+      "team_abbr": "2TM",
+      "position": "SF",
+      "ppg": "13.7"
+    },
+    {
+      "player_name": "De'Andre Hunter",
+      "team_abbr": "CLE",
+      "position": "SF",
+      "ppg": "14.0"
+    },
+    {
+      "player_name": "De'Andre Hunter",
+      "team_abbr": "SAC",
+      "position": "SF",
+      "ppg": "7.5"
+    },
+    {
+      "player_name": "Bobby Portis",
+      "team_abbr": "MIL",
+      "position": "PF",
+      "ppg": "13.7"
+    },
+    {
+      "player_name": "John Collins",
+      "team_abbr": "LAC",
+      "position": "PF",
+      "ppg": "13.6"
+    },
+    {
+      "player_name": "Cedric Coward",
+      "team_abbr": "MEM",
+      "position": "SG",
+      "ppg": "13.6"
+    },
+    {
+      "player_name": "Zach Edey",
+      "team_abbr": "MEM",
+      "position": "C",
+      "ppg": "13.6"
+    },
+    {
+      "player_name": "Ajay Mitchell",
+      "team_abbr": "OKC",
+      "position": "SG",
+      "ppg": "13.6"
+    },
+    {
+      "player_name": "Naz Reid",
+      "team_abbr": "MIN",
+      "position": "C",
+      "ppg": "13.6"
+    },
+    {
+      "player_name": "Cam Thomas",
+      "team_abbr": "2TM",
+      "position": "SG",
+      "ppg": "13.5"
+    },
+    {
+      "player_name": "Cam Thomas",
+      "team_abbr": "BRK",
+      "position": "SG",
+      "ppg": "15.6"
+    },
+    {
+      "player_name": "Cam Thomas",
+      "team_abbr": "MIL",
+      "position": "SG",
+      "ppg": "10.7"
+    },
+    {
+      "player_name": "Tim Hardaway Jr.",
+      "team_abbr": "DEN",
+      "position": "SG",
+      "ppg": "13.5"
+    },
+    {
+      "player_name": "Reed Sheppard",
+      "team_abbr": "HOU",
+      "position": "SG",
+      "ppg": "13.5"
+    },
+    {
+      "player_name": "Toumani Camara",
+      "team_abbr": "POR",
+      "position": "PF",
+      "ppg": "13.4"
+    },
+    {
+      "player_name": "Quentin Grimes",
+      "team_abbr": "PHI",
+      "position": "SG",
+      "ppg": "13.4"
+    },
+    {
+      "player_name": "Jordan Poole",
+      "team_abbr": "NOP",
+      "position": "PG",
+      "ppg": "13.4"
+    },
+    {
+      "player_name": "Tobias Harris",
+      "team_abbr": "DET",
+      "position": "PF",
+      "ppg": "13.3"
+    },
+    {
+      "player_name": "Keldon Johnson",
+      "team_abbr": "SAS",
+      "position": "SF",
+      "ppg": "13.2"
+    },
+    {
+      "player_name": "Jaylon Tyson",
+      "team_abbr": "CLE",
+      "position": "SG",
+      "ppg": "13.2"
+    },
+    {
+      "player_name": "Kyle Kuzma",
+      "team_abbr": "MIL",
+      "position": "PF",
+      "ppg": "13.0"
+    },
+    {
+      "player_name": "Brandon Williams",
+      "team_abbr": "DAL",
+      "position": "PG",
+      "ppg": "13.0"
+    },
+    {
+      "player_name": "Sam Merrill",
+      "team_abbr": "CLE",
+      "position": "SG",
+      "ppg": "12.8"
+    },
+    {
+      "player_name": "Collin Gillespie",
+      "team_abbr": "PHO",
+      "position": "PG",
+      "ppg": "12.7"
+    },
+    {
+      "player_name": "Deandre Ayton",
+      "team_abbr": "LAL",
+      "position": "C",
+      "ppg": "12.5"
+    },
+    {
+      "player_name": "GG Jackson II",
+      "team_abbr": "MEM",
+      "position": "PF",
+      "ppg": "12.5"
+    },
+    {
+      "player_name": "Malik Monk",
+      "team_abbr": "SAC",
+      "position": "SG",
+      "ppg": "12.5"
+    },
+    {
+      "player_name": "Maxime Raynaud",
+      "team_abbr": "SAC",
+      "position": "C",
+      "ppg": "12.5"
+    },
+    {
+      "player_name": "Jaylen Wells",
+      "team_abbr": "MEM",
+      "position": "SG",
+      "ppg": "12.5"
+    },
+    {
+      "player_name": "Max Christie",
+      "team_abbr": "DAL",
+      "position": "SG",
+      "ppg": "12.3"
+    },
+    {
+      "player_name": "Noah Clowney",
+      "team_abbr": "BRK",
+      "position": "PF",
+      "ppg": "12.3"
+    },
+    {
+      "player_name": "De'Anthony Melton",
+      "team_abbr": "GSW",
+      "position": "PG",
+      "ppg": "12.3"
+    },
+    {
+      "player_name": "Jonathan Kuminga",
+      "team_abbr": "2TM",
+      "position": "PF",
+      "ppg": "12.2"
+    },
+    {
+      "player_name": "Jonathan Kuminga",
+      "team_abbr": "GSW",
+      "position": "PF",
+      "ppg": "12.1"
+    },
+    {
+      "player_name": "Jonathan Kuminga",
+      "team_abbr": "ATL",
+      "position": "PF",
+      "ppg": "12.3"
+    },
+    {
+      "player_name": "Donte DiVincenzo",
+      "team_abbr": "MIN",
+      "position": "SG",
+      "ppg": "12.2"
+    },
+    {
+      "player_name": "Cameron Johnson",
+      "team_abbr": "DEN",
+      "position": "SF",
+      "ppg": "12.2"
+    },
+    {
+      "player_name": "Tre Johnson",
+      "team_abbr": "WAS",
+      "position": "SG",
+      "ppg": "12.2"
+    },
+    {
+      "player_name": "Duncan Robinson",
+      "team_abbr": "DET",
+      "position": "SG",
+      "ppg": "12.2"
+    },
+    {
+      "player_name": "Donovan Clingan",
+      "team_abbr": "POR",
+      "position": "C",
+      "ppg": "12.1"
+    },
+    {
+      "player_name": "Moses Moody",
+      "team_abbr": "GSW",
+      "position": "SG",
+      "ppg": "12.1"
+    },
+    {
+      "player_name": "Christian Braun",
+      "team_abbr": "DEN",
+      "position": "SG",
+      "ppg": "12.0"
+    },
+    {
+      "player_name": "Josh Hart",
+      "team_abbr": "NYK",
+      "position": "SF",
+      "ppg": "12.0"
+    },
+    {
+      "player_name": "Miles McBride",
+      "team_abbr": "NYK",
+      "position": "SG",
+      "ppg": "12.0"
+    },
+    {
+      "player_name": "Tristen Newton",
+      "team_abbr": "HOU",
+      "position": "SG",
+      "ppg": "12.0"
+    },
+    {
+      "player_name": "Dyson Daniels",
+      "team_abbr": "ATL",
+      "position": "SG",
+      "ppg": "11.9"
+    },
+    {
+      "player_name": "Blake Hinson",
+      "team_abbr": "UTA",
+      "position": "SF",
+      "ppg": "11.9"
+    },
+    {
+      "player_name": "Myles Turner",
+      "team_abbr": "MIL",
+      "position": "C",
+      "ppg": "11.9"
+    },
+    {
+      "player_name": "Wendell Carter Jr.",
+      "team_abbr": "ORL",
+      "position": "C",
+      "ppg": "11.8"
+    },
+    {
+      "player_name": "Dylan Harper",
+      "team_abbr": "SAS",
+      "position": "SG",
+      "ppg": "11.8"
+    },
+    {
+      "player_name": "Julian Reese",
+      "team_abbr": "WAS",
+      "position": "PF",
+      "ppg": "11.8"
+    }
+  ]
+}

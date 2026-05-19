@@ -23,13 +23,9 @@ export default function GameCard({ game, prediction }) {
   const showPrediction = status === 'scheduled' && prediction
 
   let predictedTeamFull = null
-  let predictedPct = null
   if (showPrediction) {
-    const homeProb = Number(prediction.home_win_prob) || 0
     const isHome = prediction.prediction === 'home'
     predictedTeamFull = isHome ? game.home_team : game.away_team
-    const prob = isHome ? homeProb : 1 - homeProb
-    predictedPct = Math.round(prob * 100)
   }
 
   return (
@@ -54,21 +50,18 @@ export default function GameCard({ game, prediction }) {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
-        <TeamScoreRow teamName={game.away_team} score={game.away_score} />
+        <TeamScoreRow teamName={game.away_team} score={game.away_score} teamId={game.away_team_id} />
         <div style={{ textAlign: 'center', padding: '0 0.5rem' }}>
           <p style={{ fontSize: '1.2rem', color: 'var(--muted)', fontWeight: 700 }}>vs</p>
         </div>
-        <TeamScoreRow teamName={game.home_team} score={game.home_score} />
+        <TeamScoreRow teamName={game.home_team} score={game.home_score} teamId={game.home_team_id} />
       </div>
 
       {showPrediction && (
         <div className="prediction-badge">
-          <div className="prediction-badge-row">
-            <span className="prediction-badge-label">
-              {shortTeamName(predictedTeamFull)} favored
-            </span>
-            <span className="prediction-badge-pct">{predictedPct}%</span>
-          </div>
+          <p className="prediction-badge-label">
+            {shortTeamName(predictedTeamFull)} favored
+          </p>
           {prediction.rationale && (
             <p className="prediction-badge-rationale">{prediction.rationale}</p>
           )}

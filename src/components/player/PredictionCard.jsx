@@ -62,7 +62,6 @@ export default function PredictionCard({ stats, recentGames = [] }) {
 
   const branding  = getTeamBranding(stats.team)
   const teamColor = branding?.color || '#4f8cff'
-  const logoUrl   = branding?.logoUrl || null
 
   const last5  = recentGames.slice(0, 5)
   const wins   = last5.filter(g => g.result === 'W').length
@@ -76,11 +75,6 @@ export default function PredictionCard({ stats, recentGames = [] }) {
     <>
       <section className="card panel prediction-card" style={{position:'relative',overflow:'hidden'}}>
         <div style={{position:'absolute',left:0,top:0,bottom:0,width:3,background:teamColor,borderRadius:'4px 0 0 4px',boxShadow:`2px 0 16px ${teamColor}55`}} />
-
-        {logoUrl && (
-          <img src={logoUrl} alt="" onError={e=>e.currentTarget.style.display='none'}
-            style={{position:'absolute',right:'0.75rem',top:'0.75rem',width:44,height:44,objectFit:'contain',opacity:0.1,pointerEvents:'none'}} />
-        )}
 
         <div style={{paddingLeft:'0.5rem'}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'0.75rem'}}>

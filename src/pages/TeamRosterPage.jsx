@@ -1,26 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import standingsData from '../data/standings'
-import { getPlayersForTeamIdentity, getStandings, getTeamRosterByTeamId } from '../lib/api'
-import { getTeamIdentityFromSlug } from '../lib/teamBranding'
+import RosterPlayerCard from '../components/roster/RosterPlayerCard'
+import TeamRosterHero from '../components/roster/TeamRosterHero'
+import { getLiveGames, getPlayersForTeamIdentity, getStandings, getTeamRosterByTeamId } from '../lib/api'
+import { buildTeamRosterSummary } from '../lib/teamStats'
+import { getTeamIdentityFromSlug, teamNameToSlug } from '../lib/teamBranding'
 import { resolveNbaFranchiseId } from '../lib/nbaTeamIds'
 import { currentNbaSeasonSlug } from '../lib/nbaSeason'
-
-function positionBucket(pos) {
-  if (!pos) return 'Other'
-  const u = String(pos).toUpperCase()
-  if (/\bPG\b|^PG/.test(u) || u.startsWith('PG')) return 'PG'
-  if (/\bSG\b|^SG/.test(u) || u.startsWith('SG')) return 'SG'
-  if (/\bSF\b|^SF/.test(u) || u.startsWith('SF')) return 'SF'
-  if (/\bPF\b|^PF/.test(u) || u.startsWith('PF')) return 'PF'
-  if (/\bC\b|^C-|^C /.test(u) || u.startsWith('C')) return 'C'
-  if (u.includes('GUARD')) return 'Guards'
-  if (u.includes('FORWARD')) return 'Forwards'
-  if (u.includes('CENTER')) return 'Centers'
-  return 'Other'
-}
-
-const BUCKET_ORDER = ['PG', 'SG', 'SF', 'PF', 'C', 'Guards', 'Forwards', 'Centers', 'Other']
 
 export default function TeamRosterPage() {
   const { teamSlug } = useParams()
@@ -40,15 +27,30 @@ export default function TeamRosterPage() {
   )
   const teamLabel = identity?.canonicalName ?? null
 
-  const standingRow = useMemo(
-    () => (teamLabel ? standingsRef.find((r) => r.team === teamLabel) : null),
-    [standingsRef, teamLabel],
-  )
+  const standingRow = useMemo(() => {
+    if (!standingsRef?.length) return null
+    const want = String(teamSlug || '').toLowerCase()
+    return standingsRef.find((r) => {
+      if (teamLabel && r.team === teamLabel) return true
+      if (want && r.team_slug && String(r.team_slug).toLowerCase() === want) return true
+      if (want && teamNameToSlug(r.team) === want) return true
+      return false
+    }) ?? null
+  }, [standingsRef, teamLabel, teamSlug])
   const franchiseId = standingRow?.team_id ?? resolveNbaFranchiseId(teamLabel)
 
   const [players, setPlayers] = useState([])
+  const [liveGames, setLiveGames] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    let alive = true
+    getLiveGames().then((rows) => {
+      if (alive) setLiveGames(rows || [])
+    })
+    return () => { alive = false }
+  }, [])
 
   useEffect(() => {
     if (!identity) {
@@ -81,15 +83,20 @@ export default function TeamRosterPage() {
     return () => { cancelled = true }
   }, [identity, franchiseId])
 
-  const byBucket = useMemo(() => {
-    const m = {}
-    for (const p of players) {
-      const b = positionBucket(p.position)
-      if (!m[b]) m[b] = []
-      m[b].push(p)
-    }
-    return m
-  }, [players])
+  const sortedPlayers = useMemo(
+    () => [...players].sort((a, b) => String(a.player_name).localeCompare(String(b.player_name))),
+    [players],
+  )
+
+  const teamSummary = useMemo(
+    () => buildTeamRosterSummary({
+      teamLabel,
+      standingRow,
+      players: sortedPlayers,
+      liveGames,
+    }),
+    [teamLabel, standingRow, sortedPlayers, liveGames],
+  )
 
   if (!teamSlug) return null
 
@@ -103,14 +110,12 @@ export default function TeamRosterPage() {
         </p>
       </section>
 
-      <section className="card panel roster-header">
-        <h1 className="page-title">{teamLabel || 'Team roster'}</h1>
-        {standingRow && (
-          <p className="page-subtitle">
-            {standingRow.conference} · {standingRow.wins}-{standingRow.losses} ({standingRow.pct.toFixed(3)})
-          </p>
-        )}
-      </section>
+      <TeamRosterHero
+        teamLabel={teamLabel}
+        standingRow={standingRow}
+        summary={teamSummary}
+        franchiseId={franchiseId}
+      />
 
       {loading && (
         <p style={{ color: 'var(--muted)', padding: '2rem 0', textAlign: 'center' }}>Loading roster…</p>
@@ -121,52 +126,23 @@ export default function TeamRosterPage() {
       {!loading && !error && players.length === 0 && (
         <div className="card panel" style={{ padding: '2rem', textAlign: 'center' }}>
           <p style={{ color: 'var(--muted)' }}>
-            No roster found for <strong>{teamLabel}</strong>. Run{' '}
-            <code>npm run sync:nba -- --players</code> to load <code>nba_team_rosters</code> and{' '}
-            <code>player_stats</code>, or use <code>--games</code> for recent games. Static fallback uses{' '}
-            <code>player_stats</code> by team name / tricode ({identity?.tricode?.toUpperCase() ?? '—'}).
+            No roster found for <strong>{teamLabel}</strong>.
           </p>
         </div>
       )}
 
       {!loading && !error && players.length > 0 && (
-        <div className="roster-buckets">
-          {BUCKET_ORDER.filter((b) => byBucket[b]?.length).map((bucket) => (
-            <section key={bucket} className="card panel roster-bucket">
-              <h2 className="roster-bucket-title">{bucket}</h2>
-              <div className="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Player</th>
-                      <th>Pos</th>
-                      <th>PPG</th>
-                      <th>RPG</th>
-                      <th>APG</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {byBucket[bucket].map((p) => (
-                      <tr key={p.player_id}>
-                        <td>{p.jersey_number ?? '—'}</td>
-                        <td>
-                          <Link to={'/player/' + p.player_id} className="roster-player-link">
-                            {p.player_name}
-                          </Link>
-                        </td>
-                        <td>{p.position ?? '—'}</td>
-                        <td>{p.ppg ?? '—'}</td>
-                        <td>{p.rpg ?? '—'}</td>
-                        <td>{p.apg ?? '—'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          ))}
-        </div>
+        <section className="card panel roster-grid-panel">
+          <div className="roster-grid-header">
+            <h2 className="roster-grid-title">Roster</h2>
+            <p className="roster-grid-count">{sortedPlayers.length} players</p>
+          </div>
+          <div className="roster-card-grid">
+            {sortedPlayers.map((p, i) => (
+              <RosterPlayerCard key={p.player_id} player={p} teamName={teamLabel} index={i} />
+            ))}
+          </div>
+        </section>
       )}
 
       <footer className="footer">StaxNYC Predictor — Team roster</footer>

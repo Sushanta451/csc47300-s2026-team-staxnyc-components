@@ -8,6 +8,11 @@
 .highlight-card {
   overflow: hidden;
   transition: transform 0.18s ease, border-color 0.18s ease;
+  will-change: transform, opacity;
+}
+
+.highlights-intro {
+  will-change: transform, opacity;
 }
 
 .highlight-card:hover {

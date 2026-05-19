@@ -4,10 +4,12 @@ import ConferenceFilter from '../components/standings/ConferenceFilter'
 import StandingsTable from '../components/standings/StandingsTable'
 import { getStandings } from '../lib/api'
 import { currentNbaSeasonSlug } from '../lib/nbaSeason'
-
-function sortRows(list) {
-  return list.slice().sort((a, b) => a.rank !== b.rank ? a.rank - b.rank : b.pct - a.pct)
-}
+import {
+  filterConferenceRows,
+  pickConferenceLeader,
+  sortStandingsRows,
+} from '../lib/standingsUtils'
+import { teamNickname } from '../lib/teamBranding'
 
 function AnimatedNumber({ target, delay = 0 }) {
   const [val, setVal] = useState(0)
@@ -48,8 +50,11 @@ function StatCard({ label, value, sub, color, delay, icon }) {
     >
       <div style={{ fontSize: '1.4rem', marginBottom: 4 }}>{icon}</div>
       <div style={{ fontSize: '1.3rem', fontWeight: 800, color, fontFamily: 'var(--font-mono)', lineHeight: 1 }}>
-        <AnimatedNumber target={typeof value === 'number' ? value : 0} delay={delay + 100} />
-        {typeof value !== 'number' && value}
+        {typeof value === 'number' ? (
+          <AnimatedNumber target={value} delay={delay + 100} />
+        ) : (
+          value
+        )}
       </div>
       <div style={{ fontSize: '0.72rem', color: 'var(--muted)', marginTop: 3, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
       {sub && <div style={{ fontSize: '0.68rem', color, marginTop: 2, fontWeight: 600 }}>{sub}</div>}
@@ -70,12 +75,15 @@ export default function StandingsPage() {
 
   function handleFilter(v) { setFilter(v); setFilterKey(k => k + 1) }
 
-  const eastRows = useMemo(() => sortRows(rows.filter(r => r.conference === 'East')), [rows])
-  const westRows = useMemo(() => sortRows(rows.filter(r => r.conference === 'West')), [rows])
-  const filtered = useMemo(() => filter === 'All' ? rows : sortRows(rows.filter(r => r.conference === filter)), [filter, rows])
+  const eastRows = useMemo(() => sortStandingsRows(filterConferenceRows(rows, 'East')), [rows])
+  const westRows = useMemo(() => sortStandingsRows(filterConferenceRows(rows, 'West')), [rows])
+  const filtered = useMemo(
+    () => (filter === 'All' ? rows : sortStandingsRows(filterConferenceRows(rows, filter))),
+    [filter, rows],
+  )
 
-  const topEast    = eastRows[0]
-  const topWest    = westRows[0]
+  const topEast = useMemo(() => pickConferenceLeader(eastRows), [eastRows])
+  const topWest = useMemo(() => pickConferenceLeader(westRows), [westRows])
   const hotStreak  = [...eastRows, ...westRows].filter(r => r.streak?.startsWith('W') && parseInt(r.streak.slice(1)) >= 3)
   const bestRecord = [...eastRows, ...westRows].reduce((best, r) => (!best || r.wins > best.wins) ? r : best, null)
 
@@ -131,14 +139,24 @@ export default function StandingsPage() {
             sub={bestRecord?.team.split(' ').slice(-1)[0]}
             color="var(--success)" delay={260} />
           {topEast && (
-            <StatCard icon="" label="East leader" value={topEast.team.split(' ').slice(-1)[0]}
+            <StatCard
+              icon=""
+              label="East leader"
+              value={teamNickname(topEast.team)}
               sub={`${topEast.wins}–${topEast.losses}`}
-              color="var(--accent)" delay={340} />
+              color="var(--accent)"
+              delay={340}
+            />
           )}
           {topWest && (
-            <StatCard icon="" label="West leader" value={topWest.team.split(' ').slice(-1)[0]}
+            <StatCard
+              icon=""
+              label="West leader"
+              value={teamNickname(topWest.team)}
               sub={`${topWest.wins}–${topWest.losses}`}
-              color="#7c5cff" delay={420} />
+              color="#7c5cff"
+              delay={420}
+            />
           )}
         </div>
 
@@ -194,7 +212,10 @@ export default function StandingsPage() {
                   <h2 className="standings-conf-title" style={{ margin: 0 }}>Eastern Conference</h2>
                   {topEast && (
                     <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>
-                      Leader: <strong style={{ color: 'var(--accent)' }}>{topEast.wins}–{topEast.losses}</strong>
+                      Leader:{' '}
+                      <strong style={{ color: 'var(--accent)' }}>
+                        {teamNickname(topEast.team)} · {topEast.wins}–{topEast.losses}
+                      </strong>
                     </span>
                   )}
                 </div>
@@ -228,7 +249,10 @@ export default function StandingsPage() {
                   <h2 className="standings-conf-title" style={{ margin: 0 }}>Western Conference</h2>
                   {topWest && (
                     <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>
-                      Leader: <strong style={{ color: '#7c5cff' }}>{topWest.wins}–{topWest.losses}</strong>
+                      Leader:{' '}
+                      <strong style={{ color: '#7c5cff' }}>
+                        {teamNickname(topWest.team)} · {topWest.wins}–{topWest.losses}
+                      </strong>
                     </span>
                   )}
                 </div>
