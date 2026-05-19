@@ -8,7 +8,6 @@ import {
   deleteChatMessage,
   getProfilesByIds,
 } from '../../lib/api'
-import ChatAuthorPopover from './ChatAuthorPopover'
 import './LiveChatModal.css'
 
 const MAX_LEN = 500
@@ -28,7 +27,6 @@ export default function LiveChatModal({ gameId, homeTeam, awayTeam, onClose }) {
   const { user, profile, isAdmin } = useAuth()
   const [messages, setMessages] = useState([])
   const [authors, setAuthors] = useState({})
-  const [openAuthorId, setOpenAuthorId] = useState(null)
   const [draft, setDraft] = useState('')
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
@@ -129,9 +127,9 @@ export default function LiveChatModal({ gameId, homeTeam, awayTeam, onClose }) {
             <div className="chat-empty">Be the first to say something.</div>
           )}
           {!loading && messages.map(m => {
-            const author = authors[m.user_id]
-            const displayName = author?.display_name || 'Fan'
             const isMe = user && m.user_id === user.id
+            const author = isMe ? profile : authors[m.user_id]
+            const displayName = author?.display_name || (isMe ? 'You' : 'User')
             return (
               <div key={m.id} className={'chat-msg' + (isMe ? ' me' : '')}>
                 <div className="chat-msg-avatar" aria-hidden="true">
@@ -141,12 +139,7 @@ export default function LiveChatModal({ gameId, homeTeam, awayTeam, onClose }) {
                 </div>
                 <div className="chat-msg-body">
                   <div className="chat-msg-meta">
-                    <button
-                      type="button"
-                      className="chat-msg-name chat-msg-name-btn"
-                      onClick={() => setOpenAuthorId(m.user_id)}
-                      title="View profile"
-                    >{displayName}</button>
+                    <span className="chat-msg-name">{displayName}</span>
                     <span className="chat-msg-time">{formatTime(m.created_at)}</span>
                     {isAdmin && (
                       <button
@@ -188,14 +181,6 @@ export default function LiveChatModal({ gameId, homeTeam, awayTeam, onClose }) {
         )}
 
         {error && <div className="ask-error chat-error">{error}</div>}
-
-        {openAuthorId && (
-          <ChatAuthorPopover
-            profile={authors[openAuthorId]}
-            userId={openAuthorId}
-            onClose={() => setOpenAuthorId(null)}
-          />
-        )}
       </div>
     </div>
   )

@@ -11,3 +11,7 @@ package-lock.json
 # Azure backend lives separately at ~/Desktop/azure — never tracked in the frontend repo
 /azure/
 .claude/
+
+# SQL migrations are kept outside the repo; share them out-of-band
+/sql/
+*.sql

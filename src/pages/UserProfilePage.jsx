@@ -98,29 +98,6 @@ export default function UserProfilePage() {
               <p>{profile.bio}</p>
             </section>
           )}
-
-          {(profile.age || profile.favorite_team || profile.favorite_player) && (
-            <section className="user-profile-facts">
-              {profile.age && (
-                <div className="user-profile-fact fact-amber">
-                  <span className="user-profile-fact-label">Age</span>
-                  <span className="user-profile-fact-value">{profile.age}</span>
-                </div>
-              )}
-              {profile.favorite_team && (
-                <div className="user-profile-fact fact-red">
-                  <span className="user-profile-fact-label">Favorite team</span>
-                  <span className="user-profile-fact-value">{profile.favorite_team}</span>
-                </div>
-              )}
-              {profile.favorite_player && (
-                <div className="user-profile-fact fact-pink">
-                  <span className="user-profile-fact-label">Favorite player</span>
-                  <span className="user-profile-fact-value">{profile.favorite_player}</span>
-                </div>
-              )}
-            </section>
-          )}
         </article>
       )}
     </main>
