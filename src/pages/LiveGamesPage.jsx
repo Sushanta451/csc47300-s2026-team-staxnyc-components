@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react'
 import GameCard from '../components/live-games/GameCard'
-import AdminAddGameForm from '../components/live-games/AdminAddGameForm'
-import { useAuth } from '../lib/AuthContext'
 import { getLiveGames, getPredictionsByGameIds } from '../lib/api'
 
 export default function LiveGamesPage() {
-  const { isAdmin } = useAuth()
   const [games, setGames] = useState([])
   const [predictions, setPredictions] = useState({})
   const [loading, setLoading] = useState(true)
@@ -57,8 +54,6 @@ export default function LiveGamesPage() {
       <section className="page-header">
         <p className="breadcrumb">League / <span>Live Games</span></p>
       </section>
-
-      {isAdmin && <AdminAddGameForm onAdded={loadGames} />}
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>

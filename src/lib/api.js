@@ -358,16 +358,6 @@ export async function getLiveGames(fromDate, toDate) {
   return data
 }
 
-export async function addLiveGame(row) {
-  const { data, error } = await supabase
-    .from('live_games')
-    .insert(row)
-    .select()
-    .single()
-  if (error) throw error
-  return data
-}
-
 export async function deleteLiveGame(gameId) {
   const { error, count } = await supabase
     .from('live_games')
