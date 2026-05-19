@@ -14,6 +14,7 @@ import SignupPage from './pages/SignupPage'
 import ProfilePage from './pages/ProfilePage'
 import UserProfilePage from './pages/UserProfilePage'
 import AdminPage from './pages/AdminPage'
+import WembyAnimDemoPage from './pages/WembyAnimDemoPage'
 import RequireAdmin from './components/admin/RequireAdmin'
 
 export default function App() {
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/user/:userId" element={<UserProfilePage />} />
+        <Route path="/anim-demo" element={<WembyAnimDemoPage />} />
         <Route path="/admin" element={<RequireAdmin><AdminPage /></RequireAdmin>} />
       </Routes>
     </AuthProvider>

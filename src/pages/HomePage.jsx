@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import PlayerSearchBar from '../components/search/PlayerSearchBar'
 import FeaturedPlayerCard from '../components/home/FeaturedPlayerCard'
+import WembyDunkOverlay from '../components/player/WembyDunkOverlay'
 import { getActiveFeaturedPlayers, getLiveGames } from '../lib/api'
 import { currentNbaSeasonSlug } from '../lib/nbaSeason'
 
@@ -77,6 +78,13 @@ export default function HomePage() {
   const [liveCount, setLiveCount] = useState(null)
   const pageRef = useRef(null)
 
+  const [showWemby] = useState(() => {
+    if (typeof window === 'undefined') return false
+    if (sessionStorage.getItem('wemby-splash-shown') === '1') return false
+    sessionStorage.setItem('wemby-splash-shown', '1')
+    return true
+  })
+
   useScrollReveal(pageRef)
 
   useEffect(() => {
@@ -115,6 +123,7 @@ export default function HomePage() {
 
   return (
     <>
+      {showWemby && <WembyDunkOverlay />}
       <style>{`
         @keyframes heroEntry {
           from { opacity:0; transform:translateY(24px); }
