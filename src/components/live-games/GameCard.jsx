@@ -77,15 +77,13 @@ export default function GameCard({ game, prediction }) {
         </div>
       )}
 
-      {isLive && (
-        <button
-          type="button"
-          className="live-chat-open-btn"
-          onClick={() => setChatOpen(true)}
-        >
-          Join live chat
-        </button>
-      )}
+      <button
+        type="button"
+        className="live-chat-open-btn"
+        onClick={() => setChatOpen(true)}
+      >
+        {isLive ? 'Join live chat' : 'Open chat'}
+      </button>
 
       {askOpen && prediction && (
         <AskAboutPredictionModal
