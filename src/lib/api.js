@@ -235,7 +235,7 @@ export async function getProfilesByIds(ids) {
   if (!ids.length) return []
   const { data, error } = await supabase
     .from('user_profiles')
-    .select('id,display_name')
+    .select('id,display_name,avatar_url,bio,age,favorite_team,favorite_player')
     .in('id', ids)
   if (error) throw error
   return data
@@ -244,7 +244,7 @@ export async function getProfilesByIds(ids) {
 export async function getPublicProfile(userId) {
   const { data, error } = await supabase
     .from('user_profiles')
-    .select('id,display_name,avatar_url,bio,created_at')
+    .select('id,display_name,avatar_url,bio,age,favorite_team,favorite_player,created_at')
     .eq('id', userId)
     .maybeSingle()
   if (error && error.code !== 'PGRST116') throw error
