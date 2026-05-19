@@ -2582,45 +2582,6 @@ select.input {
   color: var(--text);
 }
 
-.admin-add-game .admin-add-game-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.7rem 0.9rem;
-}
-
-.admin-add-game .admin-add-game-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.admin-add-game .admin-add-game-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--muted-2);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.admin-add-game .admin-add-game-actions {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-top: 0.2rem;
-  flex-wrap: wrap;
-}
-
-.admin-add-game .admin-add-game-ok {
-  font-size: 0.78rem;
-  color: var(--success);
-}
-
-.admin-add-game .admin-add-game-err {
-  font-size: 0.78rem;
-  color: var(--danger);
-}
-
 .game-card-admin-delete {
   margin-top: 0.5rem;
   width: 100%;
@@ -2649,8 +2610,7 @@ select.input {
 }
 
 @media (max-width: 540px) {
-  .admin-highlight-form .admin-hl-grid,
-  .admin-add-game .admin-add-game-grid {
+  .admin-highlight-form .admin-hl-grid {
     grid-template-columns: 1fr;
   }
 }
