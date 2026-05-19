@@ -59,20 +59,36 @@ export default function PendingRequestsPanel({ onCountChange }) {
   }
 
   return (
-    <div className="card panel">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3>Pending Requests</h3>
-        <button className="btn-ghost" onClick={refresh} disabled={loading}>Refresh</button>
+    <div className="card panel admin-card">
+      <div className="admin-card-header">
+        <div>
+          <h3 className="admin-card-title">Pending Requests</h3>
+          <p className="admin-card-sub">
+            User-submitted profile changes waiting for your review.
+          </p>
+        </div>
+        <button
+          className="icon-btn admin-refresh"
+          onClick={refresh}
+          disabled={loading}
+          title="Refresh"
+          aria-label="Refresh requests"
+        >
+          {loading ? '…' : '↻'}
+        </button>
       </div>
 
       {error && <p className="auth-error" style={{ marginTop: '0.75rem' }}>{error}</p>}
 
       {loading ? (
-        <p style={{ color: 'var(--muted)', marginTop: '1rem' }}>Loading…</p>
+        <div className="admin-empty">
+          <p>Loading requests…</p>
+        </div>
       ) : requests.length === 0 ? (
-        <p style={{ color: 'var(--muted)', marginTop: '1rem' }}>
-          No pending requests. You’re all caught up.
-        </p>
+        <div className="admin-empty">
+          <p className="admin-empty-title">All caught up</p>
+          <p className="admin-empty-sub">No pending requests right now. Good work.</p>
+        </div>
       ) : (
         <ul className="pending-list">
           {requests.map((r) => (

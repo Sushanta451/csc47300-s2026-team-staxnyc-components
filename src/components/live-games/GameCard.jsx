@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import GameStatusBadge from './GameStatusBadge'
 import TeamScoreRow from './TeamScoreRow'
+import AskAboutPredictionModal from '../predictions/AskAboutPredictionModal'
 
 function formatGameTime(dateStr) {
   if (!dateStr) return ''
@@ -7,10 +9,28 @@ function formatGameTime(dateStr) {
   return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
 }
 
-export default function GameCard({ game }) {
+function shortTeamName(full) {
+  if (!full) return ''
+  const parts = String(full).trim().split(/\s+/)
+  return parts[parts.length - 1]
+}
+
+export default function GameCard({ game, prediction }) {
+  const [askOpen, setAskOpen] = useState(false)
   const status = (game.status || '').toLowerCase()
   const isLive = status === 'live'
   const isScheduled = status === 'scheduled' || status === 'upcoming'
+  const showPrediction = status === 'scheduled' && prediction
+
+  let predictedTeamFull = null
+  let predictedPct = null
+  if (showPrediction) {
+    const homeProb = Number(prediction.home_win_prob) || 0
+    const isHome = prediction.prediction === 'home'
+    predictedTeamFull = isHome ? game.home_team : game.away_team
+    const prob = isHome ? homeProb : 1 - homeProb
+    predictedPct = Math.round(prob * 100)
+  }
 
   return (
     <div
@@ -40,6 +60,37 @@ export default function GameCard({ game }) {
         </div>
         <TeamScoreRow teamName={game.home_team} score={game.home_score} />
       </div>
+
+      {showPrediction && (
+        <div className="prediction-badge">
+          <div className="prediction-badge-row">
+            <span className="prediction-badge-label">
+              {shortTeamName(predictedTeamFull)} favored
+            </span>
+            <span className="prediction-badge-pct">{predictedPct}%</span>
+          </div>
+          {prediction.rationale && (
+            <p className="prediction-badge-rationale">{prediction.rationale}</p>
+          )}
+          <button
+            type="button"
+            className="prediction-badge-btn"
+            onClick={() => setAskOpen(true)}
+          >
+            Ask why?
+          </button>
+        </div>
+      )}
+
+      {askOpen && prediction && (
+        <AskAboutPredictionModal
+          gameId={game.game_id}
+          homeTeam={game.home_team}
+          awayTeam={game.away_team}
+          prediction={prediction}
+          onClose={() => setAskOpen(false)}
+        />
+      )}
     </div>
   )
 }

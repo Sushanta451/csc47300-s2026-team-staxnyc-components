@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(azurite --silent --location ./ --debug ./azurite.log)",
+      "Bash(lsof -nP -iTCP -sTCP:LISTEN)",
+      "Bash(/Users/sushanta/Desktop/azure/.venv/bin/python -c \"import azure.functions; import azure.durable_functions; import supabase; import nba_api; print\\('imports OK'\\)\")",
+      "Bash(/Users/sushanta/Desktop/azure/.venv/bin/pip install *)",
+      "Bash(/Users/sushanta/Desktop/azure/.venv/bin/python -c \"import azure.functions, azure.durable_functions, supabase, nba_api, requests; print\\('imports OK'\\)\")"
+    ],
+    "additionalDirectories": [
+      "/Users/sushanta/Desktop/azure"
+    ]
+  }
+}
