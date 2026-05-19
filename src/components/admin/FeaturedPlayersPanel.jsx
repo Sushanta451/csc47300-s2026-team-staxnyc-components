@@ -6,7 +6,7 @@ import {
 import FeaturedPlayerAdminRow from './FeaturedPlayerAdminRow'
 import PlayerPickerModal from '../common/PlayerPickerModal'
 
-export default function FeaturedPlayersPanel() {
+export default function FeaturedPlayersPanel({ onCountChange }) {
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
@@ -19,7 +19,9 @@ export default function FeaturedPlayersPanel() {
   async function refresh() {
     setLoading(true); setError('')
     try {
-      setRows(await getFeaturedConfig())
+      const next = await getFeaturedConfig()
+      setRows(next)
+      onCountChange?.(next.length)
     } catch (err) {
       setError(err.message || 'Failed to load')
     } finally {
@@ -102,27 +104,50 @@ export default function FeaturedPlayersPanel() {
   }
 
   const usedIds = Object.fromEntries(rows.map((r) => [r.player_id, true]))
+  const activeCount = rows.filter((r) => r.active).length
+  const hiddenCount = rows.length - activeCount
 
   return (
-    <div className="card panel">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3>Featured Players</h3>
-        <button className="btn primary" onClick={() => setPickerOpen(true)} disabled={busy}>
-          + Add player
-        </button>
+    <div className="card panel admin-card">
+      <div className="admin-card-header">
+        <div>
+          <h3 className="admin-card-title">Featured Players</h3>
+          <p className="admin-card-sub">
+            The homepage starting lineup. Order matters — top of the list shows first.
+          </p>
+        </div>
+        <div className="admin-card-header-right">
+          <span className="admin-chip">
+            <span className="admin-chip-dot live" /> {activeCount} active
+          </span>
+          {hiddenCount > 0 && (
+            <span className="admin-chip muted">
+              <span className="admin-chip-dot" /> {hiddenCount} hidden
+            </span>
+          )}
+          <button
+            className="btn primary"
+            onClick={() => setPickerOpen(true)}
+            disabled={busy}
+          >
+            + Add player
+          </button>
+        </div>
       </div>
-      <p style={{ color: 'var(--muted)', fontSize: '0.85rem', marginTop: '0.4rem' }}>
-        These appear on the homepage in the order shown. Hidden rows are skipped.
-      </p>
 
       {error && <p className="auth-error" style={{ marginTop: '0.75rem' }}>{error}</p>}
 
       {loading ? (
-        <p style={{ color: 'var(--muted)', marginTop: '1rem' }}>Loading…</p>
+        <div className="admin-empty">
+          <p>Loading lineup…</p>
+        </div>
       ) : rows.length === 0 ? (
-        <p style={{ color: 'var(--muted)', marginTop: '1rem' }}>
-          No featured players yet. Click <b>Add player</b> to start.
-        </p>
+        <div className="admin-empty">
+          <p className="admin-empty-title">No featured players yet</p>
+          <p className="admin-empty-sub">
+            Click <b>Add player</b> to build your homepage lineup.
+          </p>
+        </div>
       ) : (
         <ul className="featured-list">
           {rows.map((r, i) => (

@@ -32,7 +32,7 @@ export function AuthProvider({ children }) {
     user,
     profile,
     loading,
-    isAdmin: profile?.role === 'admin',
+    isAdmin: profile?.Roles === 'admin',
     refreshProfile: async () => {
       if (user) setProfile(await getProfile(user.id))
     },

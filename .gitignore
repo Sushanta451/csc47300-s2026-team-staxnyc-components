@@ -7,3 +7,7 @@ package-lock.json
 *.log
 .vscode
 .idea
+
+# Azure backend lives separately at ~/Desktop/azure — never tracked in the frontend repo
+/azure/
+.claude/

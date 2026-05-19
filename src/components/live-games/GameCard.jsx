@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import GameStatusBadge from './GameStatusBadge'
 import TeamScoreRow from './TeamScoreRow'
+import AskAboutPredictionModal from '../predictions/AskAboutPredictionModal'
+import LiveChatModal from '../live-chat/LiveChatModal'
 
 function formatGameTime(dateStr) {
   if (!dateStr) return ''
@@ -7,10 +10,25 @@ function formatGameTime(dateStr) {
   return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
 }
 
-export default function GameCard({ game }) {
+function shortTeamName(full) {
+  if (!full) return ''
+  const parts = String(full).trim().split(/\s+/)
+  return parts[parts.length - 1]
+}
+
+export default function GameCard({ game, prediction }) {
+  const [askOpen, setAskOpen] = useState(false)
+  const [chatOpen, setChatOpen] = useState(false)
   const status = (game.status || '').toLowerCase()
   const isLive = status === 'live'
   const isScheduled = status === 'scheduled' || status === 'upcoming'
+  const showPrediction = status === 'scheduled' && prediction
+
+  let predictedTeamFull = null
+  if (showPrediction) {
+    const isHome = prediction.prediction === 'home'
+    predictedTeamFull = isHome ? game.home_team : game.away_team
+  }
 
   return (
     <div
@@ -34,12 +52,57 @@ export default function GameCard({ game }) {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
-        <TeamScoreRow teamName={game.away_team} score={game.away_score} />
+        <TeamScoreRow teamName={game.away_team} score={game.away_score} teamId={game.away_team_id} />
         <div style={{ textAlign: 'center', padding: '0 0.5rem' }}>
           <p style={{ fontSize: '1.2rem', color: 'var(--muted)', fontWeight: 700 }}>vs</p>
         </div>
-        <TeamScoreRow teamName={game.home_team} score={game.home_score} />
+        <TeamScoreRow teamName={game.home_team} score={game.home_score} teamId={game.home_team_id} />
       </div>
+
+      {showPrediction && (
+        <div className="prediction-badge">
+          <p className="prediction-badge-label">
+            {shortTeamName(predictedTeamFull)} favored
+          </p>
+          {prediction.rationale && (
+            <p className="prediction-badge-rationale">{prediction.rationale}</p>
+          )}
+          <button
+            type="button"
+            className="prediction-badge-btn"
+            onClick={() => setAskOpen(true)}
+          >
+            Ask why?
+          </button>
+        </div>
+      )}
+
+      <button
+        type="button"
+        className="live-chat-open-btn"
+        onClick={() => setChatOpen(true)}
+      >
+        {isLive ? 'Join live chat' : 'Open chat'}
+      </button>
+
+      {askOpen && prediction && (
+        <AskAboutPredictionModal
+          gameId={game.game_id}
+          homeTeam={game.home_team}
+          awayTeam={game.away_team}
+          prediction={prediction}
+          onClose={() => setAskOpen(false)}
+        />
+      )}
+
+      {chatOpen && (
+        <LiveChatModal
+          gameId={game.game_id}
+          homeTeam={game.home_team}
+          awayTeam={game.away_team}
+          onClose={() => setChatOpen(false)}
+        />
+      )}
     </div>
   )
 }

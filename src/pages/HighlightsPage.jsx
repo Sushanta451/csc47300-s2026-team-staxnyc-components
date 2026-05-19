@@ -1,20 +1,26 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import HighlightCard from '../components/highlights/HighlightCard'
+import AdminHighlightForm from '../components/highlights/AdminHighlightForm'
+import { useAuth } from '../lib/AuthContext'
 import { getGameHighlights } from '../lib/api'
 import './HighlightsPage.css'
 
 export default function HighlightsPage() {
+  const { isAdmin } = useAuth()
   const [highlights, setHighlights] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    async function load() {
-      const data = await getGameHighlights(20)
-      if (data) setHighlights(data)
-      setLoading(false)
-    }
-    load()
+  const refresh = useCallback(async () => {
+    const data = await getGameHighlights(20)
+    if (data) setHighlights(data)
+    setLoading(false)
   }, [])
+
+  useEffect(() => { refresh() }, [refresh])
+
+  const handleDeleted = (gameId) => {
+    setHighlights(prev => prev.filter(h => String(h.game_id) !== String(gameId)))
+  }
 
   if (loading) return (
     <main className="container">
@@ -28,14 +34,13 @@ export default function HighlightsPage() {
         <p className="breadcrumb">League / <span>Highlights</span></p>
       </section>
 
-      <div style={{ marginBottom: '1.5rem' }}>
+      <div className="highlights-intro card-pop-in" style={{ marginBottom: '1.5rem', '--card-pop-delay': '0s' }}>
         <h1 style={{ fontSize: 'clamp(1.25rem,2.3vw,1.65rem)', fontWeight: 800, marginBottom: '0.3rem' }}>
           Game Highlights
         </h1>
-        <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
-          Automatically pulled from the NBA YouTube channel after each game
-        </p>
       </div>
+
+      {isAdmin && <AdminHighlightForm onSaved={refresh} />}
 
       {highlights.length === 0 ? (
         <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
@@ -43,7 +48,9 @@ export default function HighlightsPage() {
         </div>
       ) : (
         <div className="highlights-grid">
-          {highlights.map(h => <HighlightCard key={h.game_id} highlight={h} />)}
+          {highlights.map((h, i) => (
+            <HighlightCard key={h.game_id} highlight={h} index={i} onDelete={handleDeleted} />
+          ))}
         </div>
       )}
 

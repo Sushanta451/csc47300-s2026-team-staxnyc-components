@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, Link } from 'react-router-dom'
 import { useAuth } from '../lib/AuthContext'
 import { getMyChangeRequests, createChangeRequest, updateMyProfile } from '../lib/api'
 import ProfileEditForm from '../components/profile/ProfileEditForm'
@@ -59,6 +59,12 @@ export default function ProfilePage() {
         <p className="subtitle" style={{ color: 'var(--muted)' }}>
           Profile changes are sent to an admin for approval before they go live.
         </p>
+        <p style={{ color: 'var(--muted)', fontSize: '0.85rem', marginTop: '0.4rem' }}>
+          Public profile link:{' '}
+          <Link to={`/user/${user.id}`} className="profile-public-link">
+            /user/{user.id.slice(0, 8)}…
+          </Link>
+        </p>
       </section>
 
       <section className="profile-grid">
@@ -69,7 +75,7 @@ export default function ProfilePage() {
             <dt>Display name</dt><dd>{profile?.display_name || <em style={{ color: 'var(--muted)' }}>not set</em>}</dd>
             <dt>Avatar URL</dt><dd className="ellipsis">{profile?.avatar_url || <em style={{ color: 'var(--muted)' }}>not set</em>}</dd>
             <dt>Bio</dt><dd>{profile?.bio || <em style={{ color: 'var(--muted)' }}>not set</em>}</dd>
-            <dt>Role</dt><dd><span className="pill">{profile?.role || 'user'}</span></dd>
+            <dt>Role</dt><dd><span className="pill">{profile?.Roles || 'user'}</span></dd>
           </dl>
         </div>
 

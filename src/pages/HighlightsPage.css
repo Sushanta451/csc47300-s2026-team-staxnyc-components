@@ -1,5 +1,3 @@
-/* ─── Highlights Page ─── */
-
 .highlights-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -10,6 +8,11 @@
 .highlight-card {
   overflow: hidden;
   transition: transform 0.18s ease, border-color 0.18s ease;
+  will-change: transform, opacity;
+}
+
+.highlights-intro {
+  will-change: transform, opacity;
 }
 
 .highlight-card:hover {
@@ -20,7 +23,7 @@
 .highlight-video {
   position: relative;
   width: 100%;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  padding-bottom: 56.25%;
   background: rgba(0, 0, 0, 0.3);
 }
 
