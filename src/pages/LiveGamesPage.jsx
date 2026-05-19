@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
 import GameCard from '../components/live-games/GameCard'
+import AdminAddGameForm from '../components/live-games/AdminAddGameForm'
+import { useAuth } from '../lib/AuthContext'
 import { getLiveGames, getPredictionsByGameIds } from '../lib/api'
 
 export default function LiveGamesPage() {
+  const { isAdmin } = useAuth()
   const [games, setGames] = useState([])
   const [predictions, setPredictions] = useState({})
   const [loading, setLoading] = useState(true)
@@ -55,6 +58,8 @@ export default function LiveGamesPage() {
         <p className="breadcrumb">League / <span>Live Games</span></p>
       </section>
 
+      {isAdmin && <AdminAddGameForm onAdded={loadGames} />}
+
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: 'clamp(1.25rem,2.3vw,1.65rem)', fontWeight: 800, marginBottom: '0.3rem' }}>Today's Games</h1>
@@ -69,21 +74,21 @@ export default function LiveGamesPage() {
       {liveGames.length > 0 && (
         <section style={{ marginBottom: '2rem' }}>
           <h2 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--success)', letterSpacing: '0.1em', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Live Now</h2>
-          <div style={grid}>{liveGames.map(g => <GameCard key={g.game_id} game={g} prediction={predictions[g.game_id]} />)}</div>
+          <div style={grid}>{liveGames.map(g => <GameCard key={g.game_id} game={g} prediction={predictions[g.game_id]} onDelete={(id) => setGames(prev => prev.filter(x => x.game_id !== id))} />)}</div>
         </section>
       )}
 
       {scheduledGames.length > 0 && (
         <section style={{ marginBottom: '2rem' }}>
           <h2 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Scheduled</h2>
-          <div style={grid}>{scheduledGames.map(g => <GameCard key={g.game_id} game={g} prediction={predictions[g.game_id]} />)}</div>
+          <div style={grid}>{scheduledGames.map(g => <GameCard key={g.game_id} game={g} prediction={predictions[g.game_id]} onDelete={(id) => setGames(prev => prev.filter(x => x.game_id !== id))} />)}</div>
         </section>
       )}
 
       {finalGames.length > 0 && (
         <section style={{ marginBottom: '2rem' }}>
           <h2 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.1em', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Final</h2>
-          <div style={grid}>{finalGames.map(g => <GameCard key={g.game_id} game={g} prediction={predictions[g.game_id]} />)}</div>
+          <div style={grid}>{finalGames.map(g => <GameCard key={g.game_id} game={g} prediction={predictions[g.game_id]} onDelete={(id) => setGames(prev => prev.filter(x => x.game_id !== id))} />)}</div>
         </section>
       )}
 

@@ -235,7 +235,7 @@ export async function getProfilesByIds(ids) {
   if (!ids.length) return []
   const { data, error } = await supabase
     .from('user_profiles')
-    .select('id,display_name,avatar_url,bio,age,favorite_team,favorite_player')
+    .select('id,display_name')
     .in('id', ids)
   if (error) throw error
   return data
@@ -244,7 +244,7 @@ export async function getProfilesByIds(ids) {
 export async function getPublicProfile(userId) {
   const { data, error } = await supabase
     .from('user_profiles')
-    .select('id,display_name,avatar_url,bio,age,favorite_team,favorite_player,created_at')
+    .select('id,display_name,avatar_url,bio,created_at')
     .eq('id', userId)
     .maybeSingle()
   if (error && error.code !== 'PGRST116') throw error
@@ -356,6 +356,25 @@ export async function getLiveGames(fromDate, toDate) {
   const { data, error } = await q
   if (error) throw error
   return data
+}
+
+export async function addLiveGame(row) {
+  const { data, error } = await supabase
+    .from('live_games')
+    .insert(row)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function deleteLiveGame(gameId) {
+  const { error, count } = await supabase
+    .from('live_games')
+    .delete({ count: 'exact' })
+    .eq('game_id', String(gameId))
+  if (error) throw error
+  return count
 }
 
 export async function getPredictionsByGameIds(gameIds) {

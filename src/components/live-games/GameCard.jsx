@@ -3,6 +3,8 @@ import GameStatusBadge from './GameStatusBadge'
 import TeamScoreRow from './TeamScoreRow'
 import AskAboutPredictionModal from '../predictions/AskAboutPredictionModal'
 import LiveChatModal from '../live-chat/LiveChatModal'
+import { useAuth } from '../../lib/AuthContext'
+import { deleteLiveGame } from '../../lib/api'
 
 function formatGameTime(dateStr) {
   if (!dateStr) return ''
@@ -16,11 +18,32 @@ function shortTeamName(full) {
   return parts[parts.length - 1]
 }
 
-export default function GameCard({ game, prediction }) {
+export default function GameCard({ game, prediction, onDelete }) {
+  const { isAdmin } = useAuth()
   const [askOpen, setAskOpen] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const status = (game.status || '').toLowerCase()
   const isLive = status === 'live'
+
+  async function handleDelete() {
+    if (deleting) return
+    const ok = window.confirm(`Delete ${game.away_team} at ${game.home_team}?`)
+    if (!ok) return
+    setDeleting(true)
+    try {
+      const count = await deleteLiveGame(game.game_id)
+      if (count === 0) {
+        window.alert('Nothing was deleted — your admin role may not be applied yet.')
+        setDeleting(false)
+        return
+      }
+      if (onDelete) onDelete(game.game_id)
+    } catch (e) {
+      window.alert('Delete failed: ' + (e?.message || 'unknown'))
+      setDeleting(false)
+    }
+  }
   const isScheduled = status === 'scheduled' || status === 'upcoming'
   const showPrediction = status === 'scheduled' && prediction
 
@@ -84,6 +107,17 @@ export default function GameCard({ game, prediction }) {
       >
         {isLive ? 'Join live chat' : 'Open chat'}
       </button>
+
+      {isAdmin && (
+        <button
+          type="button"
+          className="game-card-admin-delete"
+          onClick={handleDelete}
+          disabled={deleting}
+        >
+          {deleting ? 'Deleting...' : 'Delete (admin)'}
+        </button>
+      )}
 
       {askOpen && prediction && (
         <AskAboutPredictionModal
