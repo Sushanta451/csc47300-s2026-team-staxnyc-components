@@ -180,6 +180,7 @@ export async function getStandings() {
 export async function getGameHighlights(limit = 20) {
   const { data, error } = await supabase
     .from('game_highlights').select('*')
+    .neq('youtube_video_id', '__HIDDEN__')
     .order('created_at', { ascending: false }).limit(limit)
   if (error) throw error
   return data
@@ -195,11 +196,21 @@ export async function upsertHighlight(row) {
   return data
 }
 
-export async function deleteHighlight(gameId) {
+export async function deleteHighlight(highlight) {
+  // Soft delete: replace the row with a hidden marker so the Azure highlight
+  // finder won't re-add it on the next scraper run. (A hard DELETE would just
+  // leave the game without a highlight row, and Azure re-fetches those.)
+  const gameId = typeof highlight === 'object' ? highlight.game_id : highlight
   const { error } = await supabase
     .from('game_highlights')
-    .delete()
-    .eq('game_id', String(gameId))
+    .upsert({
+      game_id: String(gameId),
+      home_team: highlight?.home_team || '',
+      away_team: highlight?.away_team || '',
+      youtube_video_id: '__HIDDEN__',
+      video_title: 'hidden by admin',
+      thumbnail_url: '',
+    }, { onConflict: 'game_id' })
   if (error) throw error
 }
 

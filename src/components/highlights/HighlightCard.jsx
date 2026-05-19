@@ -11,7 +11,7 @@ export default function HighlightCard({ highlight, index = 0, onDelete }) {
     if (!window.confirm(`Delete highlight for ${highlight.away_team} vs ${highlight.home_team}?`)) return
     setBusy(true)
     try {
-      await deleteHighlight(highlight.game_id)
+      await deleteHighlight(highlight)
       onDelete?.(highlight.game_id)
     } catch (e) {
       window.alert('Delete failed: ' + (e?.message || 'unknown'))
