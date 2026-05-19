@@ -1,4 +1,6 @@
 import PlayerImage from '../common/PlayerImage'
+import { formatPlayerMeta } from '../../lib/playerPosition'
+import { formatTeamLabel } from '../../lib/teamBranding'
 
 export default function FeaturedPlayerAdminRow({
   row, isFirst, isLast, busy,
@@ -31,8 +33,7 @@ export default function FeaturedPlayerAdminRow({
           </span>
           {player && (
             <span className="featured-meta">
-              {player.team}
-              {player.position ? ` · ${player.position}` : ''}
+              {formatPlayerMeta(formatTeamLabel(player.team), player.position)}
               {player.jersey_number ? ` · #${player.jersey_number}` : ''}
             </span>
           )}

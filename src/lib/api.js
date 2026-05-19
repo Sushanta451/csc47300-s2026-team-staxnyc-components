@@ -1,13 +1,74 @@
 import { supabase } from './supabase'
-import { teamNameToSlug, teamVariantsForQuery } from './teamBranding'
-import { resolveNbaFranchiseId } from './nbaTeamIds'
+import { formatTeamLabel, getTeamLogoUrl, isTeamLabelMissing, teamNameToSlug, teamVariantsForQuery } from './teamBranding'
+import { franchiseIdToFullName, resolveNbaFranchiseId } from './nbaTeamIds'
 import { currentNbaSeasonSlug } from './nbaSeason'
+import { enrichPlayerForCompare } from './compareStats'
+import { getPlayerTeamFallback } from './playerTeamFallback'
 
-export async function getPlayerById(playerId) {
+async function enrichPlayersWithTeams(players) {
+  if (!players?.length) return players || []
+  const season = currentNbaSeasonSlug()
+  const ids = [...new Set(players.map((p) => String(p.player_id)).filter(Boolean))]
+  const teamByPlayerId = {}
+
+  function applyRosterRows(rows) {
+    for (const row of rows || []) {
+      const pid = String(row.player_id)
+      if (teamByPlayerId[pid]) continue
+      const full = franchiseIdToFullName(row.team_id)
+      if (full) teamByPlayerId[pid] = full
+    }
+  }
+
+  if (ids.length) {
+    const { data: seasonRows } = await supabase
+      .from('nba_team_rosters')
+      .select('player_id,team_id,season')
+      .in('player_id', ids)
+      .eq('season', season)
+    applyRosterRows(seasonRows)
+
+    const missingIds = ids.filter((pid) => !teamByPlayerId[pid])
+    if (missingIds.length) {
+      const { data: fallbackRows } = await supabase
+        .from('nba_team_rosters')
+        .select('player_id,team_id,season')
+        .in('player_id', missingIds)
+        .order('season', { ascending: false })
+      applyRosterRows(fallbackRows)
+    }
+
+    for (const pid of ids) {
+      if (teamByPlayerId[pid]) continue
+      const fallback = getPlayerTeamFallback(pid)
+      if (fallback) teamByPlayerId[pid] = fallback
+    }
+  }
+
+  return players.map((p) => {
+    const pid = String(p.player_id)
+    let team = formatTeamLabel(p.team)
+    if (!team && teamByPlayerId[pid]) team = teamByPlayerId[pid]
+    if (!team && isTeamLabelMissing(p.team)) team = null
+    return { ...p, team: team || teamByPlayerId[pid] || null }
+  })
+}
+
+/** Player row with season stats filled from game logs when DB totals are zeroed. */
+export async function getPlayerById(playerId, gameLimit = 82) {
   const { data, error } = await supabase
     .from('player_stats').select('*').eq('player_id', String(playerId)).maybeSingle()
   if (error && error.code !== 'PGRST116') throw error
-  return data ?? null
+  if (!data) return null
+  const games = await getPlayerGames(playerId, gameLimit)
+  const withStats = enrichPlayerForCompare(data, games)
+  const [enriched] = await enrichPlayersWithTeams([withStats])
+  return enriched ?? withStats
+}
+
+/** Compare page — uses a shorter recent-game window for radar scaling. */
+export async function getPlayerForCompare(playerId, gameLimit = 40) {
+  return getPlayerById(playerId, gameLimit)
 }
 
 export async function getPlayerGames(playerId, limit = 15) {
@@ -25,11 +86,11 @@ export async function getPlayerGames(playerId, limit = 15) {
 export async function searchPlayers(query, limit = 12) {
   const { data, error } = await supabase
     .from('player_stats')
-    .select('player_id,player_name,team')
+    .select('player_id,player_name,team,position')
     .ilike('player_name', '*' + query.trim() + '*')
     .limit(limit)
   if (error) throw error
-  return data
+  return enrichPlayersWithTeams(data || [])
 }
 
 export async function getPlayersForTeamIdentity(identity) {
@@ -41,7 +102,7 @@ export async function getPlayersForTeamIdentity(identity) {
     .in('team', variants)
     .order('player_name', { ascending: true })
   if (error) throw error
-  return data || []
+  return enrichPlayersWithTeams(data || [])
 }
 
 export async function getTeamRosterByTeamId(teamId, season) {
@@ -66,6 +127,7 @@ export async function getTeamRosterByTeamId(teamId, season) {
     .in('player_id', ids)
 
   const statsById = Object.fromEntries((statsRows || []).map((s) => [String(s.player_id), s]))
+  const teamFullName = franchiseIdToFullName(tid)
 
   return roster.map((r) => {
     const sid = String(r.player_id)
@@ -74,8 +136,8 @@ export async function getTeamRosterByTeamId(teamId, season) {
     return {
       player_id: sid,
       player_name: r.player_name,
-      team: null,
-      position: r.position ?? '—',
+      team: teamFullName,
+      position: r.position ?? null,
       ppg: s?.ppg ?? null,
       rpg: s?.rpg ?? null,
       apg: s?.apg ?? null,
@@ -92,7 +154,7 @@ export async function getStandings() {
   try {
     const { data, error } = await supabase
       .from('nba_standings')
-      .select('conference,team,rank,wins,losses,pct,gb,streak,last10,team_slug')
+      .select('conference,team,rank,wins,losses,pct,gb,streak,last10,team_slug,team_id,logo_url')
       .order('conference', { ascending: true })
       .order('rank', { ascending: true })
     if (error || !data?.length) return []
@@ -108,6 +170,7 @@ export async function getStandings() {
       streak: row.streak ?? '—',
       last10: row.last10 ?? '—',
       team_slug: row.team_slug || teamNameToSlug(row.team),
+      logo_url: getTeamLogoUrl(row.team, row.team_id, row.logo_url),
     }))
   } catch {
     return []
@@ -231,12 +294,8 @@ export async function getActiveFeaturedPlayers() {
   if (error) throw error
   if (!rows.length) return []
   const ids = rows.map((r) => r.player_id)
-  const { data: players, error: e2 } = await supabase
-    .from('player_stats')
-    .select('player_id,player_name,team,position')
-    .in('player_id', ids)
-  if (e2) throw e2
-  const byId = Object.fromEntries(players.map((p) => [p.player_id, p]))
+  const players = await Promise.all(ids.map((id) => getPlayerById(id, 40)))
+  const byId = Object.fromEntries(players.filter(Boolean).map((p) => [p.player_id, p]))
   return rows.map((r) => byId[r.player_id]).filter(Boolean)
 }
 

@@ -1,10 +1,14 @@
 import { useState, useMemo } from 'react'
-import RadarChart, { STAT_KEYS } from '../components/player/RadarChart'
-import CompareAiSection from '../components/compare/CompareAiSection'
+import RadarChart from '../components/player/RadarChart'
 import ComparePlayerCard, { normalizeHex } from '../components/compare/ComparePlayerCard'
+import CompareAiSection from '../components/compare/CompareAiSection'
 import PlayerPickerModal from '../components/common/PlayerPickerModal'
-import { getPlayerById, searchPlayers } from '../lib/api'
+import { getPlayerForCompare, searchPlayers } from '../lib/api'
+import { pickUniqueCompareColor } from '../lib/compareColors'
+import { buildRadarSeries, playerHasCompareStats, statLabel, STAT_KEYS } from '../lib/compareStats'
 import './ComparePage.css'
+
+const STAT_SUBTITLE = STAT_KEYS.map(statLabel).join(' · ')
 
 export default function ComparePage() {
   const [cards, setCards] = useState([])
@@ -40,38 +44,25 @@ export default function ComparePage() {
     return comparedPlayers.filter(p => chartVisible[p.player_id] !== false)
   }, [comparedPlayers, chartVisible])
 
-  const radarSeries = useMemo(() => {
-    const scaleGroup = visiblePlayers.length > 0 ? visiblePlayers : comparedPlayers
-    return comparedPlayers.map(p => {
-      const norms = STAT_KEYS.map(key => {
-        const val = parseFloat(p[key]) || 0
-        let max = 0
-        scaleGroup.forEach(sp => {
-          const sv = parseFloat(sp[key]) || 0
-          if (sv > max) max = sv
-        })
-        if (max === 0) max = 1
-        return val / max
-      })
-      return {
-        playerId: p.player_id,
-        name: p.player_name,
-        normValues: norms,
-        color: playerColors[p.player_id] || '#5b8cff',
-        visible: chartVisible[p.player_id] !== false,
-      }
-    })
-  }, [comparedPlayers, visiblePlayers, chartVisible, playerColors])
+  const radarSeries = useMemo(
+    () => buildRadarSeries(comparedPlayers, { visibleIds: chartVisible, colors: playerColors }),
+    [comparedPlayers, chartVisible, playerColors],
+  )
+
+  const anyVisibleHasStats = useMemo(
+    () => visiblePlayers.some(playerHasCompareStats),
+    [visiblePlayers],
+  )
 
   async function addPlayer(playerId) {
     if (usedIds[playerId]) return
-    const data = await getPlayerById(playerId)
+    const data = await getPlayerForCompare(playerId)
     if (!data) return
     const slotId = nextSlotId
     setNextSlotId(slotId + 1)
     setCards(prev => [...prev, { slotId, player: data }])
     setChartVisible(prev => ({ ...prev, [playerId]: true }))
-    setPlayerColors(prev => ({ ...prev, [playerId]: '#5b8cff' }))
+    setPlayerColors(prev => ({ ...prev, [playerId]: pickUniqueCompareColor(prev) }))
     setJustAddedSlotId(slotId)
     setTimeout(() => setJustAddedSlotId(null), 350)
     setIsPickerOpen(false)
@@ -99,7 +90,7 @@ export default function ComparePage() {
         <div>
           <h1 className="page-title">Compare Players</h1>
           <p className="page-subtitle">
-            Add players to see their stats overlaid on one radar chart. With two or more players, use <b>Explain comparison</b> for an AI-style breakdown (rule-based for now). Use the color picker and &quot;On chart&quot; toggle to customize.
+            Add players to see their stats overlaid on one radar chart. Use the color picker and &quot;On chart&quot; toggle to customize who appears on the chart.
           </p>
         </div>
       </section>
@@ -107,7 +98,7 @@ export default function ComparePage() {
       <section className="card panel radar-chart-panel">
         <div className="radar-chart-heading">
           <h2 className="radar-chart-title">Comparison Radar</h2>
-          <p className="radar-chart-sub">PPG &middot; RPG &middot; APG &middot; FG%</p>
+          <p className="radar-chart-sub">{STAT_SUBTITLE}</p>
         </div>
         {comparedPlayers.length === 0 ? (
           <p className="radar-empty-hint radar-empty-hint--solo">Add players below to see overlapping radars.</p>
@@ -117,9 +108,12 @@ export default function ComparePage() {
         {comparedPlayers.length > 0 && visiblePlayers.length === 0 && (
           <p className="radar-empty-hint">Turn on "On chart" for at least one player.</p>
         )}
+        {visiblePlayers.length > 0 && !anyVisibleHasStats && (
+          <p className="radar-empty-hint">Selected players have no season or game-log stats to chart yet.</p>
+        )}
       </section>
 
-      <CompareAiSection players={comparedPlayers} />
+      <CompareAiSection players={visiblePlayers} />
 
       <section className="compare-row">
         {cards.map(c => (
@@ -132,7 +126,10 @@ export default function ComparePage() {
             cardColor={playerColors[c.player.player_id] || '#5b8cff'}
             onToggleChart={() => setChartVisible(prev => ({ ...prev, [c.player.player_id]: prev[c.player.player_id] === false }))}
             onColorChange={hex => setPlayerColors(prev => ({ ...prev, [c.player.player_id]: normalizeHex(hex) }))}
-            onColorReset={() => setPlayerColors(prev => ({ ...prev, [c.player.player_id]: '#5b8cff' }))}
+            onColorReset={() => setPlayerColors(prev => {
+              const { [c.player.player_id]: _removed, ...rest } = prev
+              return { ...prev, [c.player.player_id]: pickUniqueCompareColor(rest) }
+            })}
             onRemove={() => removePlayer(c.player.player_id)}
           />
         ))}

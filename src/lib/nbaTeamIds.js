@@ -39,3 +39,12 @@ export function resolveNbaFranchiseId(teamName) {
   const key = Object.keys(NBA_FRANCHISE_ID_BY_FULL_NAME).find((k) => k.toLowerCase() === lower)
   return key ? NBA_FRANCHISE_ID_BY_FULL_NAME[key] : null
 }
+
+export const NBA_FULL_NAME_BY_FRANCHISE_ID = Object.fromEntries(
+  Object.entries(NBA_FRANCHISE_ID_BY_FULL_NAME).map(([name, id]) => [String(id), name]),
+)
+
+export function franchiseIdToFullName(teamId) {
+  if (teamId == null || teamId === '') return null
+  return NBA_FULL_NAME_BY_FRANCHISE_ID[String(teamId)] ?? null
+}

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { searchPlayers } from '../../lib/api'
+import { formatPlayerMeta } from '../../lib/playerPosition'
+import { formatTeamLabel } from '../../lib/teamBranding'
 
 export default function PlayerSearchBar() {
   const [query, setQuery] = useState('')
@@ -51,7 +53,10 @@ export default function PlayerSearchBar() {
           {suggestions.map(p => (
             <div key={p.player_id} className="suggestion-item"
               onClick={() => { setSuggestions([]); setQuery(''); navigate('/player/' + p.player_id) }}>
-              {p.player_name} <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>— {p.team}</span>
+              {p.player_name}{' '}
+              <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>
+                — {formatPlayerMeta(formatTeamLabel(p.team), p.position)}
+              </span>
             </div>
           ))}
         </div>

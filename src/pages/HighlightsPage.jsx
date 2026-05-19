@@ -28,7 +28,7 @@ export default function HighlightsPage() {
         <p className="breadcrumb">League / <span>Highlights</span></p>
       </section>
 
-      <div style={{ marginBottom: '1.5rem' }}>
+      <div className="highlights-intro card-pop-in" style={{ marginBottom: '1.5rem', '--card-pop-delay': '0s' }}>
         <h1 style={{ fontSize: 'clamp(1.25rem,2.3vw,1.65rem)', fontWeight: 800, marginBottom: '0.3rem' }}>
           Game Highlights
         </h1>
@@ -43,7 +43,9 @@ export default function HighlightsPage() {
         </div>
       ) : (
         <div className="highlights-grid">
-          {highlights.map(h => <HighlightCard key={h.game_id} highlight={h} />)}
+          {highlights.map((h, i) => (
+            <HighlightCard key={h.game_id} highlight={h} index={i} />
+          ))}
         </div>
       )}
 

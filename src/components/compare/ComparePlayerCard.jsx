@@ -1,9 +1,7 @@
-import { STAT_KEYS, statLabel } from '../player/RadarChart'
-
-function formatStat(key, value) {
-  if (key === 'fg_pct') return value + '%'
-  return value
-}
+import PlayerImage from '../common/PlayerImage'
+import { STAT_KEYS, formatCompareStat, statLabel } from '../../lib/compareStats'
+import { formatPlayerMeta } from '../../lib/playerPosition'
+import { formatTeamLabel, teamCardSurfaceStyle } from '../../lib/teamBranding'
 
 function normalizeHex(hex) {
   if (!hex || typeof hex !== 'string') return '#5b8cff'
@@ -17,36 +15,74 @@ function normalizeHex(hex) {
 
 export { normalizeHex }
 
-export default function ComparePlayerCard({ slotId, player, isJustAdded, onChart, cardColor, onToggleChart, onColorChange, onColorReset, onRemove }) {
+export default function ComparePlayerCard({
+  slotId,
+  player,
+  isJustAdded,
+  onChart,
+  cardColor,
+  onToggleChart,
+  onColorChange,
+  onColorReset,
+  onRemove,
+}) {
   const enterClass = isJustAdded ? ' card-enter' : ''
   const color = normalizeHex(cardColor)
+  const surface = teamCardSurfaceStyle(player.team)
 
   return (
-    <section className={'card panel compare-card' + enterClass} key={'slot-' + slotId}>
+    <section
+      className={'card panel compare-card' + enterClass}
+      key={'slot-' + slotId}
+      style={surface}
+    >
+      <div className="compare-card-photo">
+        <PlayerImage player={player} className="compare-card-photo-img" />
+        <div className="compare-card-photo-fade" aria-hidden="true" />
+      </div>
+
       <label className="compare-chart-toggle">
         <input type="checkbox" checked={onChart} onChange={onToggleChart} />
         <span>On chart</span>
       </label>
       <div className="compare-color-row">
         <label className="compare-color-label">Color</label>
-        <input className="compare-color-input" type="color" value={color} onChange={e => onColorChange(e.target.value)} />
-        <button type="button" className="compare-color-reset" onClick={onColorReset}>Reset</button>
+        <input
+          className="compare-color-input"
+          type="color"
+          value={color}
+          onChange={(e) => onColorChange(e.target.value)}
+        />
+        <button type="button" className="compare-color-reset" onClick={onColorReset}>
+          Reset
+        </button>
       </div>
-      <div className="compare-card-color" style={{ background: color, boxShadow: '0 0 12px ' + color + '99' }} />
+      <div
+        className="compare-card-color"
+        style={{ background: color, boxShadow: '0 0 12px ' + color + '99' }}
+      />
       <div className="compare-card-body">
         <div className="player-name compare-name-sm">{player.player_name}</div>
-        <div className="player-sub compare-sub-sm">{player.team} &middot; {player.position}</div>
-        <div className="compare-stat-line">
-          {STAT_KEYS.map((sk, i) => (
-            <span key={sk}>
+        <div className="player-sub compare-sub-sm">
+          {formatPlayerMeta(formatTeamLabel(player.team), player.position)}
+        </div>
+        <div className="compare-stat-line compare-stat-line--grid">
+          {STAT_KEYS.map((sk) => (
+            <span key={sk} className="compare-stat-cell">
               <span className="compare-stat-k">{statLabel(sk)}</span>{' '}
-              <span className="compare-stat-v">{formatStat(sk, player[sk])}</span>
-              {i < STAT_KEYS.length - 1 && <span className="compare-stat-sep">|</span>}
+              <span className="compare-stat-v">{formatCompareStat(sk, player[sk])}</span>
             </span>
           ))}
         </div>
       </div>
-      <button type="button" className="compare-remove-btn" onClick={onRemove} title="Remove player">&times;</button>
+      <button
+        type="button"
+        className="compare-remove-btn"
+        onClick={onRemove}
+        title="Remove player"
+      >
+        &times;
+      </button>
     </section>
   )
 }

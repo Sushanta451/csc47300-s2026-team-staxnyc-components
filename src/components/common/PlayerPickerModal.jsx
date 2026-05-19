@@ -1,3 +1,6 @@
+import { formatPlayerMeta } from '../../lib/playerPosition'
+import { formatTeamLabel } from '../../lib/teamBranding'
+
 export default function PlayerPickerModal({ query, results, usedIds, onSearch, onSelect, onClose }) {
   return (
     <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) onClose() }}>
@@ -35,7 +38,9 @@ export default function PlayerPickerModal({ query, results, usedIds, onSearch, o
                   disabled={disabled}
                 >
                   <span className="result-name">{p.player_name}</span>
-                  <span className="result-sub">{p.team}</span>
+                  <span className="result-sub">
+                    {formatPlayerMeta(formatTeamLabel(p.team), p.position)}
+                  </span>
                 </button>
               )
             })

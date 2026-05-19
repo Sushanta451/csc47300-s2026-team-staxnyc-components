@@ -1,6 +1,9 @@
-export default function HighlightCard({ highlight }) {
+export default function HighlightCard({ highlight, index = 0 }) {
   return (
-    <div className="card highlight-card">
+    <div
+      className="card highlight-card card-pop-in"
+      style={{ '--card-pop-delay': `${Math.min(index * 0.09, 0.9)}s` }}
+    >
       <div className="highlight-video">
         <iframe
           src={`https://www.youtube.com/embed/${highlight.youtube_video_id}`}

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import TeamLogo from '../common/TeamLogo'
 import { teamNameToSlug } from '../../lib/teamBranding'
 
 export default function StandingsTable({ rows, hideConferenceLink }) {
@@ -25,7 +26,8 @@ export default function StandingsTable({ rows, hideConferenceLink }) {
                 <td>{r.rank}</td>
                 <td>
                   <Link to={`/team/${slug}/roster`} className="standings-team-link">
-                    {r.team}
+                    <TeamLogo team={r.team} teamId={r.team_id} logoUrl={r.logo_url} size={28} />
+                    <span className="standings-team-name">{r.team}</span>
                   </Link>
                   {!hideConferenceLink && (
                     <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}> • {r.conference}</span>

@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './lib/AuthContext'
 import { isSupabaseConfigured } from './lib/supabase'
 import Navbar from './components/layout/Navbar'
+import ScrollToTop from './components/layout/ScrollToTop'
 import HomePage from './pages/HomePage'
 import PlayerPage from './pages/PlayerPage'
 import LiveGamesPage from './pages/LiveGamesPage'
@@ -28,6 +29,7 @@ export default function App() {
           <code>.env.example</code>.
         </div>
       )}
+      <ScrollToTop />
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
