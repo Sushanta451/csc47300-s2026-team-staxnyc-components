@@ -17,7 +17,7 @@ export default function LiveGamesPage() {
       const list = data || []
       setGames(list)
       const scheduledIds = list
-        .filter(g => (g.status || '').toLowerCase() === 'scheduled')
+        .filter(g => (g.status || '').toLowerCase() === 'scheduled' || (g.status || '').toLowerCase() === 'live')
         .map(g => g.game_id)
       const preds = await getPredictionsByGameIds(scheduledIds)
       setPredictions(preds)
@@ -35,11 +35,23 @@ export default function LiveGamesPage() {
     return () => clearInterval(interval)
   }, [])
 
+  const now = new Date()
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+  const todayEnd = todayStart + 24 * 60 * 60 * 1000
+  const tomorrowEnd = todayEnd + 24 * 60 * 60 * 1000
+
+  function isOn(g, startMs, endMs) {
+    const t = new Date(g.game_date).getTime()
+    return t >= startMs && t < endMs
+  }
+
   const liveGames = games.filter(g => (g.status || '').toLowerCase() === 'live')
   const finalGames = games.filter(g => (g.status || '').toLowerCase() === 'final')
-  const scheduledGames = games.filter(g => (g.status || '').toLowerCase() === 'scheduled')
+  const scheduledToday = games.filter(g => (g.status || '').toLowerCase() === 'scheduled' && isOn(g, todayStart, todayEnd))
+  const scheduledTomorrow = games.filter(g => (g.status || '').toLowerCase() === 'scheduled' && isOn(g, todayEnd, tomorrowEnd))
 
   const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+  const tomorrowDateStr = new Date(todayEnd).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 
   if (loading) return (
     <main className="container">
@@ -73,10 +85,17 @@ export default function LiveGamesPage() {
         </section>
       )}
 
-      {scheduledGames.length > 0 && (
+      {scheduledToday.length > 0 && (
         <section style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Scheduled</h2>
-          <div style={grid}>{scheduledGames.map(g => <GameCard key={g.game_id} game={g} prediction={predictions[g.game_id]} onDelete={(id) => setGames(prev => prev.filter(x => x.game_id !== id))} />)}</div>
+          <h2 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Today</h2>
+          <div style={grid}>{scheduledToday.map(g => <GameCard key={g.game_id} game={g} prediction={predictions[g.game_id]} onDelete={(id) => setGames(prev => prev.filter(x => x.game_id !== id))} />)}</div>
+        </section>
+      )}
+
+      {scheduledTomorrow.length > 0 && (
+        <section style={{ marginBottom: '2rem' }}>
+          <h2 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--muted-2)', letterSpacing: '0.1em', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Tomorrow &middot; {tomorrowDateStr}</h2>
+          <div style={grid}>{scheduledTomorrow.map(g => <GameCard key={g.game_id} game={g} prediction={predictions[g.game_id]} onDelete={(id) => setGames(prev => prev.filter(x => x.game_id !== id))} />)}</div>
         </section>
       )}
 
