@@ -152,6 +152,16 @@ export async function getProfilesByIds(ids) {
   return data
 }
 
+export async function getPublicProfile(userId) {
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .select('id,display_name,avatar_url,bio,created_at')
+    .eq('id', userId)
+    .maybeSingle()
+  if (error && error.code !== 'PGRST116') throw error
+  return data
+}
+
 export async function approveChangeRequest(request, reviewerId) {
   const { error: e1 } = await supabase
     .from('user_profiles')

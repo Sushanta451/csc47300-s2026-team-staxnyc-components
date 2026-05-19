@@ -10,12 +10,10 @@ export default function LiveGamesPage() {
 
   async function loadGames() {
     try {
-      const today = new Date()
-      const todayStr = today.toISOString().slice(0, 10)
-      const dayAfter = new Date(today)
-      dayAfter.setDate(dayAfter.getDate() + 2)
-      const endStr = dayAfter.toISOString().slice(0, 10)
-      const data = await getLiveGames(todayStr, endStr)
+      const now = new Date()
+      const startLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+      const endLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2)
+      const data = await getLiveGames(startLocal.toISOString(), endLocal.toISOString())
       const list = data || []
       setGames(list)
       const scheduledIds = list
