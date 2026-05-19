@@ -75,7 +75,7 @@ export default function ProfilePage() {
             <dt>Display name</dt><dd>{profile?.display_name || <em style={{ color: 'var(--muted)' }}>not set</em>}</dd>
             <dt>Avatar URL</dt><dd className="ellipsis">{profile?.avatar_url || <em style={{ color: 'var(--muted)' }}>not set</em>}</dd>
             <dt>Bio</dt><dd>{profile?.bio || <em style={{ color: 'var(--muted)' }}>not set</em>}</dd>
-            <dt>Role</dt><dd><span className="pill">{profile?.role || 'user'}</span></dd>
+            <dt>Role</dt><dd><span className="pill">{profile?.Roles || 'user'}</span></dd>
           </dl>
         </div>
 
