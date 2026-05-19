@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import PlayerSearchBar from '../components/search/PlayerSearchBar'
 import FeaturedPlayerCard from '../components/home/FeaturedPlayerCard'
 import WembyDunkOverlay from '../components/player/WembyDunkOverlay'
@@ -200,9 +201,9 @@ export default function HomePage() {
 
         <div style={{display:'flex',gap:'0.6rem',flexWrap:'wrap',margin:'0 0 0',position:'relative',zIndex:1}}>
           {quickLinks.map(({label,href},i) => (
-            <a
+            <Link
               key={href}
-              href={href}
+              to={href}
               style={{
                 display:'inline-flex', alignItems:'center',
                 padding:'0.5rem 1rem',
@@ -231,7 +232,7 @@ export default function HomePage() {
               }}
             >
               {label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -246,9 +247,9 @@ export default function HomePage() {
               <span style={{width:20,height:2,background:'var(--accent)',borderRadius:2,display:'inline-block'}} />
               <h2 className="section-title-home" style={{margin:0}}>Featured Players</h2>
             </div>
-            <a href="/compare" style={{fontSize:'0.78rem',fontWeight:600,color:'var(--accent)',opacity:0.8}}>
+            <Link to="/compare" style={{fontSize:'0.78rem',fontWeight:600,color:'var(--accent)',opacity:0.8}}>
               Compare players →
-            </a>
+            </Link>
           </div>
 
           {loading ? (
