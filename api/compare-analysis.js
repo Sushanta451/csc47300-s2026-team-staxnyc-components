@@ -1,5 +1,8 @@
 const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions'
-const MODEL = 'deepseek-reasoner'
+// deepseek-chat: returns the answer directly in content. deepseek-reasoner
+// burns its token budget on hidden chain-of-thought and often leaves content
+// empty under 1k tokens — not a fit for short prompt-and-answer endpoints.
+const MODEL = 'deepseek-chat'
 const TIMEOUT_MS = 25000
 
 function fmt(n, digits = 1) {

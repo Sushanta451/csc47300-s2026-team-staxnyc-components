@@ -56,7 +56,7 @@ export default async function handler(req, res) {
         Authorization: 'Bearer ' + DEEPSEEK_API_KEY
       },
       body: JSON.stringify({
-        model: 'deepseek-reasoner',
+        model: 'deepseek-chat',
         max_tokens: 250,
         temperature: 0.5,
         messages: [
