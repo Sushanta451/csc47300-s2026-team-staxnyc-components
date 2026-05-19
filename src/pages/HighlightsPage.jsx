@@ -32,9 +32,6 @@ export default function HighlightsPage() {
         <h1 style={{ fontSize: 'clamp(1.25rem,2.3vw,1.65rem)', fontWeight: 800, marginBottom: '0.3rem' }}>
           Game Highlights
         </h1>
-        <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
-          Automatically pulled from the NBA YouTube channel after each game
-        </p>
       </div>
 
       {highlights.length === 0 ? (
