@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import RadarChart from '../components/player/RadarChart'
 import ComparePlayerCard, { normalizeHex } from '../components/compare/ComparePlayerCard'
+import CompareAiSection from '../components/compare/CompareAiSection'
 import PlayerPickerModal from '../components/common/PlayerPickerModal'
 import { getPlayerForCompare, searchPlayers } from '../lib/api'
 import { pickUniqueCompareColor } from '../lib/compareColors'
@@ -111,6 +112,8 @@ export default function ComparePage() {
           <p className="radar-empty-hint">Selected players have no season or game-log stats to chart yet.</p>
         )}
       </section>
+
+      <CompareAiSection players={visiblePlayers} />
 
       <section className="compare-row">
         {cards.map(c => (

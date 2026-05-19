@@ -530,3 +530,23 @@
 
 .result-name { font-weight: 700; font-size: 0.9rem; }
 .result-sub  { color: var(--muted); font-size: 0.78rem; }
+
+.compare-ai-loading {
+  color: var(--muted);
+  font-style: italic;
+  margin: 0;
+}
+.compare-ai-error {
+  color: #fca5a5;
+  font-size: 0.82rem;
+  margin: 0.6rem 0 0;
+  padding: 0.5rem 0.75rem;
+  background: rgba(239, 68, 68, 0.06);
+  border-left: 2px solid rgba(239, 68, 68, 0.4);
+  border-radius: 4px;
+}
+.compare-ai-refresh {
+  margin-top: 0.75rem;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.75rem;
+}
