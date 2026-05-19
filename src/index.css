@@ -2067,3 +2067,76 @@ select.input {
   padding: 0.75rem 0.9rem;
 }
 .ask-answer-text { color: var(--text); font-size: 0.92rem; line-height: 1.55; }
+/* Public user profile */
+.user-profile-shell { padding-bottom: 4rem; }
+.user-profile-card { padding: 1.75rem; margin-top: 1rem; }
+.user-profile-header {
+  display: grid;
+  grid-template-columns: 88px 1fr auto;
+  gap: 1.25rem;
+  align-items: center;
+}
+.user-profile-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(79, 140, 255, 0.25), rgba(124, 92, 255, 0.2));
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--text);
+}
+.user-profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.user-profile-meta { min-width: 0; }
+.user-profile-name {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.user-profile-joined {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.user-profile-id {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+}
+.user-profile-bio {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--panel-border);
+}
+.user-profile-section-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+.user-profile-bio p {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.6;
+}
+.profile-public-link {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-decoration: underline;
+  text-decoration-color: rgba(79, 140, 255, 0.4);
+}
+@media (max-width: 640px) {
+  .user-profile-header { grid-template-columns: 64px 1fr; }
+  .user-profile-header > a { grid-column: 1 / -1; }
+  .user-profile-avatar { width: 64px; height: 64px; font-size: 1.2rem; }
+  .user-profile-name { font-size: 1.35rem; }
+}

@@ -96,9 +96,10 @@ export default function HomePage() {
   useEffect(() => {
     async function loadGames() {
       try {
-        const today  = new Date().toISOString().slice(0,10)
-        const tmr    = new Date(); tmr.setDate(tmr.getDate()+1)
-        const games  = await getLiveGames(today, tmr.toISOString().slice(0,10))
+        const now = new Date()
+        const startLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        const endLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+        const games = await getLiveGames(startLocal.toISOString(), endLocal.toISOString())
         setLiveCount(games?.length ?? 0)
       } catch {}
     }
