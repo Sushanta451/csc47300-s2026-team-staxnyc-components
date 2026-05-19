@@ -4,8 +4,8 @@ export default function WembyDunkOverlay() {
   const [phase, setPhase] = useState('playing')
 
   useEffect(() => {
-    const fade = setTimeout(() => setPhase('fading'), 10000)
-    const gone = setTimeout(() => setPhase('gone'),  10800)
+    const fade = setTimeout(() => setPhase('fading'), 5000)
+    const gone = setTimeout(() => setPhase('gone'),  5800)
     return () => { clearTimeout(fade); clearTimeout(gone) }
   }, [])
 
