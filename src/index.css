@@ -2490,6 +2490,28 @@ select.input {
   box-shadow: 0 0 12px -2px rgba(79, 140, 255, 0.55);
 }
 
+.live-chat-open-btn {
+  margin-top: 0.7rem;
+  width: 100%;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  background: rgba(45, 212, 191, 0.08);
+  color: var(--success);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.live-chat-open-btn:hover {
+  background: rgba(45, 212, 191, 0.18);
+  border-color: rgba(45, 212, 191, 0.6);
+  color: var(--text);
+  box-shadow: 0 0 12px -2px rgba(45, 212, 191, 0.45);
+}
+
 @media (max-width: 480px) {
   .prediction-badge-rationale {
     -webkit-line-clamp: 1;
