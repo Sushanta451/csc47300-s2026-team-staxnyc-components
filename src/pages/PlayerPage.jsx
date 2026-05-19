@@ -4,8 +4,11 @@ import PlayerHeader from '../components/player/PlayerHeader'
 import RecentGamesTable from '../components/player/RecentGamesTable'
 import PointsTrendChart from '../components/player/PointsTrendChart'
 import PredictionCard from '../components/player/PredictionCard'
+import WembyDunkOverlay from '../components/player/WembyDunkOverlay'
 import { getPlayerById, getPlayerGames } from '../lib/api'
 import { getTeamBranding } from '../lib/teamBranding'
+
+const WEMBY_ID = '1641705'
 
 function useScrollReveal(ready) {
   useEffect(() => {
@@ -114,6 +117,7 @@ export default function PlayerPage() {
 
   return (
     <>
+      {id === WEMBY_ID && <WembyDunkOverlay key={id} />}
       <style>{`
         @keyframes teamFlash {
           0%   { opacity: 0.4; }
