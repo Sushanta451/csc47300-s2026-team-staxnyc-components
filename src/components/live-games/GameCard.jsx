@@ -45,7 +45,7 @@ export default function GameCard({ game, prediction, onDelete }) {
     }
   }
   const isScheduled = status === 'scheduled' || status === 'upcoming'
-  const showPrediction = status === 'scheduled' && prediction
+  const showPrediction = (status === 'scheduled' || status === 'live') && prediction
 
   let predictedTeamFull = null
   if (showPrediction) {
