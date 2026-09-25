@@ -1,265 +1,317 @@
-import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
-import PlayerSearchBar from '../components/search/PlayerSearchBar'
-import FeaturedPlayerCard from '../components/home/FeaturedPlayerCard'
-import { getActiveFeaturedPlayers, getLiveGames } from '../lib/api'
-import { currentNbaSeasonSlug } from '../lib/nbaSeason'
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import PlayerSearchBar from "../components/search/PlayerSearchBar";
+import FeaturedPlayerCard from "../components/home/FeaturedPlayerCard";
+import { getActiveFeaturedPlayers } from "../lib/api";
+import { isSupabaseConfigured } from "../lib/supabase";
+import { currentNbaSeasonSlug } from "../lib/nbaSeason";
+import { selectPlayers } from "../lib/playerStack";
+import usePlayerStack from "../hooks/usePlayerStack";
+import "./HomePage.css";
 
-function useScrollReveal(ref) {
-  useEffect(() => {
-    if (!ref.current) return
-    const els = ref.current.querySelectorAll('.reveal')
-    const obs = new IntersectionObserver(
-      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('revealed') }),
-      { threshold: 0.08, rootMargin: '0px 0px -32px 0px' }
-    )
-    els.forEach(el => obs.observe(el))
-    return () => obs.disconnect()
-  }, [ref])
-}
-
-function BballLoader() {
-  return (
-    <div style={{padding:'3rem 0',display:'flex',flexDirection:'column',alignItems:'center',gap:'1rem'}}>
-      <div style={{position:'relative',width:60,height:60}}>
-        <div style={{
-          fontSize:'2.6rem', display:'inline-block',
-          animation:'loaderBounce 0.65s cubic-bezier(0.215,0.61,0.355,1) infinite',
-          filter:'drop-shadow(0 8px 12px rgba(0,0,0,0.5))',
-        }}></div>
-        <div style={{
-          position:'absolute', bottom:-4, left:'50%', transform:'translateX(-50%)',
-          width:32, height:8, borderRadius:'50%',
-          background:'rgba(0,0,0,0.3)',
-          filter:'blur(4px)',
-          animation:'shadowPulse 0.65s ease infinite',
-        }} />
-      </div>
-      <p style={{color:'var(--muted)',fontSize:'0.85rem',fontFamily:'var(--font-mono)',letterSpacing:'0.05em'}}>
-        Loading roster…
-      </p>
-      <style>{`
-        @keyframes loaderBounce {
-          0%,100% { transform:translateY(0) scaleY(1); }
-          40%     { transform:translateY(-24px) scaleY(1.05); }
-          80%     { transform:translateY(0) scaleX(1.1) scaleY(0.9); }
-        }
-        @keyframes shadowPulse {
-          0%,100% { transform:translateX(-50%) scale(1); opacity:0.3; }
-          40%     { transform:translateX(-50%) scale(0.6); opacity:0.15; }
-        }
-      `}</style>
-    </div>
-  )
-}
-
-function SkeletonCard() {
-  return (
-    <div className="card" style={{overflow:'hidden'}}>
-      <div style={{
-        height:230,
-        background:'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.09) 50%,rgba(255,255,255,0.04) 75%)',
-        backgroundSize:'600px 100%',
-        animation:'shimmer 1.5s ease infinite',
-      }} />
-      <div style={{padding:'1rem',display:'grid',gap:10}}>
-        <div style={{height:18,width:'58%',borderRadius:8,background:'rgba(255,255,255,0.06)',animation:'shimmer 1.5s ease infinite 0.1s'}} />
-        <div style={{height:14,width:'38%',borderRadius:8,background:'rgba(255,255,255,0.04)',animation:'shimmer 1.5s ease infinite 0.2s'}} />
-        <div style={{height:36,borderRadius:10,background:'rgba(255,255,255,0.06)',animation:'shimmer 1.5s ease infinite 0.3s'}} />
-      </div>
-      <style>{`@keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}`}</style>
-    </div>
-  )
-}
+const tools = [
+  {
+    number: "01",
+    title: "Head to head",
+    text: "Put players side by side. Find the difference behind the numbers.",
+    href: "/compare",
+    label: "Compare players",
+    symbol: "⇄",
+  },
+  {
+    number: "02",
+    title: "Around the league",
+    text: "Follow the scoreboard and the matchups that matter to you.",
+    href: "/live-games",
+    label: "Open scoreboard",
+    symbol: "◉",
+  },
+  {
+    number: "03",
+    title: "The bigger picture",
+    text: "Conference races, team records, and the road to the top.",
+    href: "/standings",
+    label: "Explore standings",
+    symbol: "↗",
+  },
+];
 
 export default function HomePage() {
-  const [featured,  setFeatured]  = useState([])
-  const [loading,   setLoading]   = useState(true)
-  const [liveCount, setLiveCount] = useState(null)
-  const pageRef = useRef(null)
-
-useScrollReveal(pageRef)
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const players = await getActiveFeaturedPlayers()
-        setFeatured(players)
-      } catch (err) {
-        console.error('Featured players failed to load:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
-  }, [])
+  const [featured, setFeatured] = useState([]);
+  const [status, setStatus] = useState("loading");
+  const [attempt, setAttempt] = useState(0);
+  const [view, setView] = useState("featured");
+  const [team, setTeam] = useState("all");
+  const [sort, setSort] = useState("featured");
+  const stack = usePlayerStack();
 
   useEffect(() => {
-    async function loadGames() {
-      try {
-        const now = new Date()
-        const startLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-        const endLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
-        const games = await getLiveGames(startLocal.toISOString(), endLocal.toISOString())
-        setLiveCount(games?.length ?? 0)
-      } catch {}
+    let active = true;
+    if (!isSupabaseConfigured) {
+      setStatus("unavailable");
+      return;
     }
-    loadGames()
-  }, [])
+    setStatus("loading");
+    const timeout = setTimeout(() => {
+      if (active) { setStatus("error"); active = false; }
+    }, 12000);
+    getActiveFeaturedPlayers()
+      .then((players) => {
+        if (active) {
+          setFeatured(players || []);
+          setStatus("ready");
+        }
+      })
+      .catch(() => {
+        if (active) setStatus("error");
+      }).finally(() => clearTimeout(timeout));
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+    };
+  }, [attempt]);
 
-  const quickLinks = [
-    {label:'Live Games', href:'/live-games'},
-    {label:'Standings',  href:'/standings'},
-    {label:'Compare',    href:'/compare'},
-    {label:'Highlights', href:'/highlights'},
-  ]
+  // Saved entries retain identity only; use fetched stats when available so cached numbers never masquerade as fresh data.
+  const savedPlayers = stack.players.map(
+    (p) =>
+      featured.find((f) => String(f.player_id) === String(p.player_id)) || p,
+  );
+  const source = view === "stack" ? savedPlayers : featured;
+  const teams = [...new Set(source.map((p) => p.team).filter(Boolean))].sort();
+  const players = selectPlayers(source, { team, sort });
+  function switchView(next) {
+    setView(next);
+    setTeam("all");
+  }
 
   return (
-    <>
-<style>{`
-        @keyframes heroEntry {
-          from { opacity:0; transform:translateY(24px); }
-          to   { opacity:1; transform:translateY(0); }
-        }
-        @keyframes courtSweep {
-          from { transform:scaleX(0); opacity:0; }
-          to   { transform:scaleX(1); opacity:1; }
-        }
-        @keyframes livePulse {
-          0%,100% { opacity:1; transform:scale(1); }
-          50%     { opacity:0.6; transform:scale(1.4); }
-        }
-        @keyframes quickLinkIn {
-          from { opacity:0; transform:translateY(12px); }
-          to   { opacity:1; transform:translateY(0); }
-        }
-      `}</style>
-
-      <main className="container" ref={pageRef} style={{position:'relative'}}>
-
-        <div style={{
-          position:'fixed', inset:0, pointerEvents:'none', zIndex:0,
-          opacity:0.025,
-          backgroundImage:`
-            repeating-linear-gradient(0deg,rgba(255,255,255,1) 0,rgba(255,255,255,1) 1px,transparent 1px,transparent 60px),
-            repeating-linear-gradient(90deg,rgba(255,255,255,1) 0,rgba(255,255,255,1) 1px,transparent 1px,transparent 60px)
-          `,
-        }} />
-
-        <section
-          className="hero"
-          aria-label="Hero"
-          style={{animation:'heroEntry 0.6s cubic-bezier(0.22,1,0.36,1) both', position:'relative', zIndex:1}}
-        >
-          <div className="hero-card" style={{paddingBottom:'1.5rem', position:'relative', overflow:'hidden'}}>
-
-            <div style={{display:'flex',alignItems:'center',gap:'1.5rem',marginBottom:'1.4rem',flexWrap:'wrap'}}>
-              <div style={{display:'flex',alignItems:'center',gap:'0.45rem'}}>
-                <span style={{
-                  display:'inline-block', width:7, height:7, borderRadius:'50%',
-                  background:'var(--success)',
-                  boxShadow:'0 0 8px var(--success)',
-                  animation:'livePulse 2s ease-in-out infinite',
-                }} />
-                <span style={{fontSize:'0.75rem',fontWeight:700,color:'var(--success)',fontFamily:'var(--font-mono)',letterSpacing:'0.1em',textTransform:'uppercase'}}>
-                  {liveCount===null ? 'Checking games…' : liveCount===0 ? 'No games today' : `${liveCount} game${liveCount!==1?'s':''} today`}
-                </span>
-              </div>
-              <div style={{height:16,width:1,background:'var(--panel-border)'}} />
-              <span style={{fontSize:'0.75rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>{currentNbaSeasonSlug()} Season</span>
-            </div>
-
-            <h1 className="reveal" style={{lineHeight:1.1}}>
-              NBA Player{' '}
-              <span className="gradient-text">Performance</span>
-              <br />Predictor
-            </h1>
-            <p className="reveal reveal-delay-1" style={{marginTop:'0.55rem',marginBottom:0}}>
-              Search players, compare stats, track live games, and follow standings — all in one place.
-            </p>
-            <div className="reveal reveal-delay-2"><PlayerSearchBar /></div>
-          </div>
-        </section>
-
-        <div style={{
-          height:2, margin:'1rem 0',
-          borderRadius:999,
-          background:'linear-gradient(90deg,transparent,rgba(91,140,255,0.55) 20%,rgba(124,92,255,0.55) 50%,rgba(91,140,255,0.55) 80%,transparent)',
-          animation:'courtSweep 0.9s cubic-bezier(0.22,1,0.36,1) both 0.4s',
-          transformOrigin:'left',
-          position:'relative', zIndex:1,
-        }} />
-
-        <div style={{display:'flex',gap:'0.6rem',flexWrap:'wrap',margin:'0 0 0',position:'relative',zIndex:1}}>
-          {quickLinks.map(({label,href},i) => (
-            <Link
-              key={href}
-              to={href}
-              style={{
-                display:'inline-flex', alignItems:'center',
-                padding:'0.5rem 1rem',
-                borderRadius:999,
-                border:'1px solid var(--panel-border)',
-                background:'var(--panel)',
-                color:'var(--muted)',
-                fontSize:'0.82rem', fontWeight:600,
-                textDecoration:'none',
-                transition:'border-color 0.22s,color 0.22s,background 0.22s,transform 0.22s,box-shadow 0.22s',
-                animation:`quickLinkIn 0.5s cubic-bezier(0.22,1,0.36,1) both ${0.5+i*0.07}s`,
-              }}
-              onMouseEnter={e=>{
-                e.currentTarget.style.borderColor='rgba(91,140,255,0.4)'
-                e.currentTarget.style.color='var(--text)'
-                e.currentTarget.style.background='rgba(91,140,255,0.08)'
-                e.currentTarget.style.transform='translateY(-3px)'
-                e.currentTarget.style.boxShadow='0 8px 20px rgba(91,140,255,0.2)'
-              }}
-              onMouseLeave={e=>{
-                e.currentTarget.style.borderColor=''
-                e.currentTarget.style.color=''
-                e.currentTarget.style.background=''
-                e.currentTarget.style.transform=''
-                e.currentTarget.style.boxShadow=''
-              }}
-            >
-              {label}
+    <main className="container stax-home">
+      <section className="stax-hero" aria-labelledby="hero-title">
+        <div className="stax-hero-copy">
+          <p className="stax-eyebrow">
+            <span className="stax-dot" /> NEW YORK ENERGY. LEAGUE-WIDE VISION.
+          </p>
+          <h1 id="hero-title">
+            Know the game.
+            <br />
+            <span>Build your stack.</span>
+          </h1>
+          <p className="stax-intro">
+            Your court-side edge. Explore player performance, break down
+            matchups, and keep your favorites in one place.
+          </p>
+          <div className="stax-hero-actions">
+            <a className="stax-primary" href="#players">
+              Explore players <span aria-hidden="true">↗</span>
+            </a>
+            <Link className="stax-text-link" to="/compare">
+              Compare the competition →
             </Link>
-          ))}
+          </div>
+          <div className="stax-hero-meta">
+            <span>{currentNbaSeasonSlug()} NBA SEASON</span>
+            <span>BUILT FOR THE BASKETBALL OBSESSED</span>
+          </div>
         </div>
-
-        <section
-          id="players"
-          className="players-section"
-          aria-label="Featured players"
-          style={{paddingTop:'2rem', position:'relative', zIndex:1}}
-        >
-          <div className="reveal" style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1rem',gap:'1rem'}}>
-            <div style={{display:'flex',alignItems:'center',gap:'0.65rem'}}>
-              <span style={{width:20,height:2,background:'var(--accent)',borderRadius:2,display:'inline-block'}} />
-              <h2 className="section-title-home" style={{margin:0}}>Featured Players</h2>
-            </div>
-            <Link to="/compare" style={{fontSize:'0.78rem',fontWeight:600,color:'var(--accent)',opacity:0.8}}>
-              Compare players →
-            </Link>
+        <div className="stax-court" aria-hidden="true">
+          <div className="stax-court-top">
+            <span>STAX / NYC</span>
+            <span>EST. 2026</span>
           </div>
+          <div className="court-lines">
+            <div className="court-center" />
+            <div className="court-key" />
+            <div className="court-arc" />
+            <div className="court-hoop" />
+          </div>
+          <div className="stax-court-word">
+            ALL
+            <br />
+            ABOUT
+            <br />
+            <em>THE GAME.</em>
+          </div>
+          <div className="stax-court-bottom">
+            <span>40.7128° N / 74.0060° W</span>
+            <span>↗</span>
+          </div>
+        </div>
+      </section>
 
-          {loading ? (
-            <div className="player-grid">
-              {[0,1,2,3].map(i => <SkeletonCard key={i} />)}
-            </div>
-          ) : featured.length === 0 ? (
-            <BballLoader />
-          ) : (
-            <div className="player-grid">
-              {featured.map((player, i) => (
-  <FeaturedPlayerCard key={player.player_id} player={player} index={i} />
-))}
-            </div>
-          )}
-        </section>
+      <section className="stax-search-panel" aria-label="Find a player">
+        <div>
+          <p className="stax-eyebrow">THE SCOUTING DESK</p>
+          <h2>Who’s on your radar?</h2>
+        </div>
+        <PlayerSearchBar />
+      </section>
 
-        <footer className="footer" style={{position:'relative',zIndex:1}}>StaxNYC Predictor</footer>
-      </main>
-    </>
-  )
+      <section
+        id="players"
+        className="stax-players"
+        aria-labelledby="players-title"
+      >
+        <div className="stax-section-heading">
+          <div>
+            <p className="stax-eyebrow">TALENT. TRENDS. YOUR PICKS.</p>
+            <h2 id="players-title">
+              The player board<span className="stax-orange">.</span>
+            </h2>
+          </div>
+          <Link className="stax-text-link" to="/compare">
+            Open comparison lab ↗
+          </Link>
+        </div>
+        <div className="stax-board-controls">
+          <div className="stax-segment" aria-label="Player collection">
+            <button
+              aria-pressed={view === "featured"}
+              onClick={() => switchView("featured")}
+            >
+              Featured
+            </button>
+            <button
+              aria-pressed={view === "stack"}
+              onClick={() => switchView("stack")}
+            >
+              My Stack <span>{stack.players.length}</span>
+            </button>
+          </div>
+          <div className="stax-filters">
+            <label>
+              Team
+              <select aria-label="Team" value={team} onChange={(e) => setTeam(e.target.value)}>
+                <option value="all">All teams</option>
+                {teams.map((t) => (
+                  <option key={t}>{t}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Sort
+              <select aria-label="Sort" value={sort} onChange={(e) => setSort(e.target.value)}>
+                <option value="featured">Default order</option>
+                <option value="ppg">Points per game</option>
+                <option value="rpg">Rebounds per game</option>
+                <option value="apg">Assists per game</option>
+                <option value="name">Name A–Z</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        {view === "stack" && (
+          <p className="stax-board-note">
+            Your personal watchlist, saved in this browser. Open a profile for
+            the latest available stats.
+          </p>
+        )}
+        <p role="status" className="stax-stack-notice">
+          {stack.notice}
+        </p>
+        {view === "featured" && status === "loading" ? (
+          <div className="stax-loading" role="status">
+            Loading the player board…
+          </div>
+        ) : view === "featured" && ["error", "unavailable"].includes(status) ? (
+          <div className="stax-empty">
+            <span className="stax-empty-icon" aria-hidden="true">
+              ↻
+            </span>
+            <h3>The player feed is unavailable</h3>
+            <p>
+              Player data isn’t connected right now. Your saved stack is still
+              here.
+            </p>
+            {status === "error" && (
+              <button
+                className="stax-primary"
+                onClick={() => setAttempt((a) => a + 1)}
+              >
+                Try again
+              </button>
+            )}
+            <button
+              className="stax-text-link"
+              onClick={() => switchView("stack")}
+            >
+              View My Stack →
+            </button>
+          </div>
+        ) : players.length ? (
+          <>
+            <p className="stax-result-count">
+              {players.length} player{players.length !== 1 ? "s" : ""} · Stats
+              from the connected player feed
+            </p>
+            <div className="player-grid stax-player-grid">
+              {players.map((player) => (
+                <FeaturedPlayerCard
+                  key={player.player_id}
+                  player={player}
+                  saved={stack.players.some(
+                    (p) => String(p.player_id) === String(player.player_id),
+                  )}
+                  onToggleSave={() => stack.toggle(player)}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="stax-empty">
+            <span className="stax-empty-icon" aria-hidden="true">
+              ＋
+            </span>
+            <h3>
+              {team !== "all"
+                ? "No players match this team"
+                : view === "stack"
+                  ? "Your next favorite starts here"
+                  : "The board is warming up"}
+            </h3>
+            <p>
+              {view === "stack"
+                ? "Save players from the featured board to build your personal stack."
+                : "No featured players are available yet. Try searching for a player above."}
+            </p>
+            {(view === "stack" || team !== "all") && (
+              <button
+                className="stax-primary"
+                onClick={() => {
+                  switchView("featured");
+                  setTeam("all");
+                }}
+              >
+                Explore featured players
+              </button>
+            )}
+          </div>
+        )}
+      </section>
+
+      <section className="stax-tools" aria-label="Explore StaxNYC">
+        {tools.map((tool) => (
+          <Link className="stax-tool" key={tool.href} to={tool.href}>
+            <div className="stax-tool-top">
+              <span>{tool.number} / THE PLAYBOOK</span>
+              <span className="stax-tool-symbol" aria-hidden="true">
+                {tool.symbol}
+              </span>
+            </div>
+            <h2>{tool.title}</h2>
+            <p>{tool.text}</p>
+            <span className="stax-tool-link">
+              {tool.label} <span aria-hidden="true">↗</span>
+            </span>
+          </Link>
+        ))}
+      </section>
+      <footer className="stax-footer">
+        <Link className="brand" to="/">
+          STAX<span className="stax-orange">NYC</span>
+        </Link>
+        <p>From the city. For the game.</p>
+        <Link to="/highlights">Catch the highlights ↗</Link>
+      </footer>
+    </main>
+  );
 }

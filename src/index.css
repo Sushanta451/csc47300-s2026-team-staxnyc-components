@@ -2776,3 +2776,14 @@ select.input {
   .user-profile-avatar { width: 64px; height: 64px; font-size: 1.2rem; }
   .user-profile-name { font-size: 1.35rem; }
 }
+
+/* StaxNYC identity and shared interaction polish. */
+:root{--bg:#0b1313;--bg-2:#101c1b;--accent:#f18b5b;--accent-2:#d1e7a7;--muted:#a0ada8;--muted-2:#b7c2bd;--accent-glow:#f18b5b20}
+body{background:#0b1313;background-image:none}
+.navbar{background:#0b1313ed}.brand-badge{background:#f18b5b;box-shadow:none;color:#101916;border-radius:5px;font-size:19px}.brand-badge:after{content:'≋'}
+.nav-links a.active{color:#f18b5b}.mobile-menu-toggle{display:none!important}
+:focus-visible{outline:2px solid #f6ad7f!important;outline-offset:4px}
+.skip-link{position:fixed;top:-100px;left:16px;z-index:1000;background:#f18b5b;color:#0b1313;padding:12px;border-radius:4px}.skip-link:focus{top:12px}
+@media(max-width:800px){.mobile-menu-toggle{display:inline-flex!important}.nav-links{display:none}}
+@media(min-width:801px){#mobile-nav{display:none!important}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal{opacity:1!important;transform:none!important}.stax-court,.stax-player-card:hover{transform:none!important}}

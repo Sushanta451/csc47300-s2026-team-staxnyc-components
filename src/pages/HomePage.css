@@ -1,0 +1,710 @@
+.stax-home {
+  --stax-orange: #f18b5b;
+  --stax-surface: #10191c;
+  padding-top: 42px;
+}
+.stax-eyebrow {
+  font: 600 10px/1.5 var(--font-mono);
+  letter-spacing: 1.8px;
+  color: #a2aeac;
+}
+.stax-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--stax-orange);
+  border-radius: 50%;
+  margin-right: 8px;
+}
+.stax-hero {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 64px;
+  align-items: center;
+  padding: 25px 0 60px;
+}
+.stax-hero h1 {
+  font-size: clamp(42px, 4.8vw, 66px);
+  line-height: 1.07;
+  letter-spacing: -3px;
+  font-weight: 800;
+  margin: 24px 0;
+}
+.stax-hero h1 span {
+  color: var(--stax-orange);
+}
+.stax-intro {
+  font-size: 15px;
+  line-height: 1.9;
+  color: #aab6b4;
+  max-width: 460px;
+}
+.stax-hero-actions {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+.stax-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  background: var(--stax-orange);
+  color: #151a19;
+  border: 1px solid var(--stax-orange);
+  border-radius: 6px;
+  padding: 12px 19px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1.5;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.stax-primary:hover {
+  background: #ffa477;
+  transform: translateY(-2px);
+}
+.stax-text-link {
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.stax-text-link:hover {
+  color: var(--stax-orange);
+}
+.stax-hero-meta {
+  display: flex;
+  gap: 18px;
+  margin-top: 42px;
+  font: 9px/1.5 var(--font-mono);
+  letter-spacing: 0.7px;
+  color: #869792;
+}
+.stax-hero-meta span + span {
+  border-left: 1px solid #3a4543;
+  padding-left: 18px;
+}
+.stax-court {
+  position: relative;
+  min-height: 390px;
+  background: #192c29;
+  border: 1px solid #486050;
+  border-radius: 9px;
+  overflow: hidden;
+  isolation: isolate;
+  transform: rotate(2deg);
+  transition: transform 0.35s;
+}
+.stax-court:hover {
+  transform: rotate(0);
+}
+.stax-court:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 3px,
+    #0000000c 3px,
+    #0000000c 4px
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+.stax-court-top,
+.stax-court-bottom {
+  display: flex;
+  justify-content: space-between;
+  padding: 21px 24px;
+  font: 10px/1.5 var(--font-mono);
+  letter-spacing: 1px;
+  color: #c5d8b1;
+}
+.stax-court-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.stax-court-bottom span:last-child {
+  font-size: 28px;
+  line-height: 1;
+}
+.stax-court-word {
+  font-size: clamp(44px, 5vw, 68px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -3px;
+  padding: 25px 26px;
+  color: #e9efdf;
+  position: relative;
+}
+.stax-court-word em {
+  font-style: normal;
+  color: #d1e7a7;
+}
+.court-lines {
+  position: absolute;
+  inset: 68px 22px 58px;
+  border: 1px solid #75917455;
+  z-index: -1;
+  transform: rotate(-25deg) scale(1.6);
+  pointer-events: none;
+}
+.court-center {
+  position: absolute;
+  left: 60%;
+  top: -10%;
+  height: 120%;
+  border-left: 1px solid #75917466;
+}
+.court-center:after {
+  content: "";
+  position: absolute;
+  width: 135px;
+  height: 135px;
+  border: 1px solid #75917466;
+  border-radius: 50%;
+  top: 20%;
+  left: -68px;
+}
+.court-key {
+  position: absolute;
+  left: 0;
+  top: 29%;
+  width: 95px;
+  height: 108px;
+  border: 1px solid #75917488;
+}
+.court-arc {
+  position: absolute;
+  left: -118px;
+  top: 5%;
+  width: 290px;
+  height: 255px;
+  border: 1px solid #75917488;
+  border-radius: 50%;
+}
+.court-hoop {
+  position: absolute;
+  left: 20px;
+  top: 44%;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #f18b5baa;
+  border-radius: 50%;
+}
+.stax-search-panel {
+  display: grid;
+  grid-template-columns: 1fr 1.7fr;
+  gap: 28px;
+  align-items: center;
+  border-top: 1px solid #ffffff14;
+  border-bottom: 1px solid #ffffff14;
+  padding: 27px 0;
+}
+.stax-search-panel h2 {
+  font-size: 21px;
+  letter-spacing: -0.6px;
+  margin-top: 5px;
+}
+.stax-search-panel .search {
+  margin: 0;
+  max-width: none;
+}
+.stax-search-panel .search-box {
+  border-radius: 6px;
+  background: #172021;
+  border: 1px solid #374241;
+  box-shadow: none;
+}
+.stax-search-panel .search-btn {
+  background: #283633;
+  color: #d9e4df;
+  border-radius: 4px;
+  box-shadow: none;
+  white-space: nowrap;
+}
+.stax-search-panel .search-input {
+  font-size: 12px;
+}
+.stax-search-panel .search-hint {
+  font-size: 10px;
+  margin-top: 8px;
+  color: #95a4a0;
+  min-height: 16px;
+}
+.stax-players {
+  padding: 45px 0;
+  scroll-margin-top: 95px;
+}
+.stax-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 20px;
+}
+.stax-section-heading h2 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1.1px;
+  margin-top: 6px;
+}
+.stax-orange {
+  color: var(--stax-orange, #f18b5b);
+}
+.stax-board-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 24px;
+}
+.stax-segment {
+  display: flex;
+  border: 1px solid #ffffff16;
+  border-radius: 6px;
+  padding: 4px;
+  gap: 4px;
+}
+.stax-segment button {
+  background: transparent;
+  border: 0;
+  color: #aab6b4;
+  padding: 8px 15px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.5;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.stax-segment button[aria-pressed="true"] {
+  background: #2a3934;
+  color: #e2eddf;
+}
+.stax-segment button span {
+  font: 10px var(--font-mono);
+  padding: 2px 5px;
+  background: #ffffff12;
+  border-radius: 3px;
+  margin-left: 5px;
+}
+.stax-filters {
+  display: flex;
+  gap: 16px;
+}
+.stax-filters label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: #98aaa3;
+}
+.stax-filters select {
+  max-width: 180px;
+  border: 1px solid #ffffff20;
+  border-radius: 5px;
+  padding: 9px;
+  background: #121d1b;
+  color: #d5dfda;
+  font-size: 11px;
+}
+.stax-board-note,
+.stax-result-count {
+  font: 10px/1.7 var(--font-mono);
+  color: #94a59e;
+  margin-top: 15px;
+}
+.stax-stack-notice {
+  font-size: 12px;
+  color: #d1e7a7;
+  min-height: 22px;
+  margin-top: 8px;
+}
+.stax-player-grid {
+  margin-top: 16px;
+  gap: 20px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.stax-player-card {
+  min-width: 0;
+  border: 1px solid #ffffff18;
+  background: #111b1b;
+  border-radius: 8px;
+  overflow: hidden;
+  transition:
+    border-color 0.2s,
+    transform 0.2s;
+}
+.stax-player-card:hover {
+  border-color: #f18b5b88;
+  transform: translateY(-4px);
+}
+.stax-player-portrait {
+  height: 185px;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse at bottom,
+    color-mix(in srgb, var(--team-color) 32%, #1a2422),
+    #17201f 75%
+  );
+}
+.stax-player-portrait .player-img-wrap {
+  position: absolute;
+  inset: 12px 0 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  background: transparent;
+}
+.stax-player-portrait .player-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom;
+}
+.stax-jersey {
+  position: absolute;
+  top: 20px;
+  left: 16px;
+  font-size: 75px;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff0d;
+  letter-spacing: -6px;
+}
+.stax-player-position {
+  position: absolute;
+  bottom: 12px;
+  left: 15px;
+  font: 9px var(--font-mono);
+  background: #111c1ddd;
+  color: #d3ddd5;
+  padding: 5px 8px;
+  border: 1px solid #ffffff22;
+  border-radius: 3px;
+}
+.stax-save {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #ffffff33;
+  border-radius: 50%;
+  background: #11201ddd;
+  color: #fff;
+  font-size: 23px;
+  cursor: pointer;
+}
+.stax-save[aria-pressed="true"] {
+  background: #d1e7a7;
+  color: #14211c;
+  border-color: #d1e7a7;
+}
+.stax-player-body {
+  padding: 18px;
+}
+.stax-player-body .stax-eyebrow {
+  letter-spacing: 0.5px;
+  font-size: 8px;
+  min-height: 12px;
+}
+.stax-player-body h3 {
+  font-size: 17px;
+  line-height: 1.4;
+  letter-spacing: -0.5px;
+  margin-top: 6px;
+}
+.stax-player-body h3 a:hover {
+  color: var(--stax-orange);
+}
+.stax-player-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 20px 0 16px;
+}
+.stax-player-stats div + div {
+  padding-left: 12px;
+  border-left: 1px solid #ffffff14;
+}
+.stax-player-stats dt {
+  font: 9px var(--font-mono);
+  color: #93a39d;
+}
+.stax-player-stats dd {
+  font-size: 21px;
+  font-weight: 700;
+  margin-top: 3px;
+  letter-spacing: -1px;
+}
+.stax-player-link {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #ffffff14;
+  padding-top: 13px;
+  font-size: 10px;
+  color: #bdc9c4;
+}
+.stax-player-link:hover {
+  color: var(--stax-orange);
+}
+.stax-empty,
+.stax-loading {
+  padding: 44px 20px;
+  background: #111c1a;
+  border: 1px dashed #ffffff25;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 15px;
+}
+.stax-empty-icon {
+  font-size: 28px;
+  color: var(--stax-orange);
+}
+.stax-empty h3 {
+  font-size: 20px;
+  margin: 8px;
+}
+.stax-empty p {
+  font-size: 13px;
+  color: #aab6b4;
+  margin-bottom: 20px;
+}
+.stax-empty .stax-text-link {
+  margin: 15px;
+}
+.stax-tools {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  padding: 8px 0 48px;
+}
+.stax-tool {
+  border: 1px solid #ffffff18;
+  border-radius: 8px;
+  padding: 24px;
+  background: #121d1a;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.stax-tool:hover {
+  background: #1a2923;
+  border-color: #75846a;
+}
+.stax-tool-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 9px var(--font-mono);
+  letter-spacing: 1px;
+  color: #98aaa0;
+}
+.stax-tool-symbol {
+  font-size: 30px;
+  color: #d1e7a7;
+}
+.stax-tool h2 {
+  font-size: 21px;
+  letter-spacing: -0.6px;
+  margin: 20px 0 8px;
+}
+.stax-tool p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #aab6b4;
+  max-width: 280px;
+}
+.stax-tool-link {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 27px;
+  color: #d1e7a7;
+}
+.stax-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid #ffffff18;
+  padding: 24px 0 36px;
+}
+.stax-footer .brand {
+  gap: 0;
+  font-size: 20px;
+  letter-spacing: -1px;
+}
+.stax-footer p,
+.stax-footer > a:last-child {
+  font-size: 10px;
+  color: #a3b1a9;
+}
+.suggestion-item.is-selected {
+  background: #ffffff14;
+}
+.search-result-meta {
+  display: block;
+  font-size: 11px;
+  color: var(--muted-2);
+}
+.search-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+@media (max-width: 1000px) {
+  .stax-hero {
+    gap: 28px;
+  }
+  .stax-player-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stax-hero h1 {
+    font-size: 48px;
+  }
+  .stax-court {
+    min-height: 365px;
+  }
+  .stax-hero-meta {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 700px) {
+  .stax-home {
+    padding-top: 16px;
+  }
+  .stax-hero {
+    grid-template-columns: 1fr;
+    padding-bottom: 30px;
+    gap: 28px;
+  }
+  .stax-hero h1 {
+    font-size: 46px;
+    letter-spacing: -2.5px;
+  }
+  .stax-court {
+    min-height: 255px;
+    transform: none;
+  }
+  .stax-court-word {
+    font-size: 42px;
+    padding: 5px 23px;
+    letter-spacing: -2px;
+  }
+  .stax-court-top,
+  .stax-court-bottom {
+    padding: 17px 22px;
+    font-size: 8px;
+  }
+  .stax-hero-meta {
+    margin-top: 25px;
+    font-size: 8px;
+    gap: 10px;
+  }
+  .stax-hero-meta span + span {
+    padding-left: 10px;
+  }
+  .stax-search-panel {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .stax-board-controls {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .stax-segment {
+    align-self: flex-start;
+  }
+  .stax-filters {
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .stax-filters label {
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+  }
+  .stax-filters select {
+    width: 100%;
+    max-width: none;
+  }
+  .stax-section-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .stax-section-heading h2 {
+    font-size: 29px;
+  }
+  .stax-tools {
+    grid-template-columns: 1fr;
+  }
+  .stax-tool h2 {
+    margin-top: 10px;
+  }
+  .stax-footer {
+    flex-wrap: wrap;
+  }
+  .stax-player-grid {
+    gap: 12px;
+  }
+  .stax-player-body {
+    padding: 13px;
+  }
+  .stax-player-body h3 {
+    font-size: 15px;
+  }
+  .stax-player-portrait {
+    height: 150px;
+  }
+  .stax-player-stats dd {
+    font-size: 18px;
+  }
+  .stax-player-stats div + div {
+    padding-left: 7px;
+  }
+  .stax-jersey {
+    font-size: 60px;
+  }
+  .stax-result-count {
+    font-size: 8px;
+  }
+  .stax-save {
+    height: 32px;
+    width: 32px;
+  }
+  .stax-hero-actions {
+    gap: 18px;
+  }
+  .stax-eyebrow {
+    font-size: 9px;
+    letter-spacing: 1.2px;
+  }
+}
+@media (max-width: 360px) {
+  .stax-player-grid {
+    grid-template-columns: 1fr;
+  }
+  .stax-hero h1 {
+    font-size: 39px;
+  }
+}
